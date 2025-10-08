@@ -99,6 +99,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
 }
 
 .logo-image {
@@ -106,9 +110,11 @@ body {
     height: 100%;
     object-fit: contain;
     transition: transform 0.3s ease;
-    background: transparent;
-    border: none;
-    outline: none;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
 }
 
 .logo-image:hover {
