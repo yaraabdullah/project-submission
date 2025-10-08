@@ -87,12 +87,15 @@ body {
     display: flex;
     align-items: center;
     gap: 1rem;
+    text-decoration: none;
+    color: inherit;
 }
 
 .logo-icon {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     position: relative;
+    flex-shrink: 0;
 }
 
 .ai-shape {
@@ -102,6 +105,7 @@ body {
     clip-path: polygon(20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%);
     border-radius: 8px;
     position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .ai-shape::before {
@@ -116,12 +120,47 @@ body {
     border-radius: 4px;
 }
 
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
 .association-text {
     color: white;
-    font-weight: 600;
-    font-size: 1.2rem;
+    font-weight: 700;
+    font-size: 1.4rem;
     text-transform: uppercase;
     letter-spacing: 1px;
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.association-text[data-ar] {
+    font-family: var(--font-arabic);
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.arabic-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-family: var(--font-arabic);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.arabic-text[data-en] {
+    font-family: var(--font-primary);
+    font-size: 0.85rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .header-controls {
@@ -616,6 +655,23 @@ body {
     
     .header-controls {
         order: -1;
+    }
+    
+    .logo {
+        justify-content: center;
+    }
+    
+    .logo-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .association-text {
+        font-size: 1.2rem;
+    }
+    
+    .arabic-text {
+        font-size: 0.8rem;
     }
     
     .input-with-button {
