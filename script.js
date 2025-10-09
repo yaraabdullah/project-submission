@@ -188,9 +188,6 @@ class AIProjectGallery {
         console.log('Project submission form submitted');
         console.log('Current member:', this.currentMember);
         
-        // Simple test - just show an alert first
-        alert('Form submitted! Check console for details.');
-        
         // Prevent multiple submissions
         const submitBtn = document.querySelector('.btn-primary');
         if (submitBtn.disabled) {
@@ -234,6 +231,24 @@ class AIProjectGallery {
                 this.currentLanguage === 'en' 
                     ? 'Please fill in all required fields!' 
                     : 'يرجى ملء جميع الحقول المطلوبة!'
+            );
+            this.resetSubmitButton();
+            return;
+        }
+        
+        // Check for duplicate projects
+        const existingProject = this.projects.find(project => 
+            project.name.toLowerCase() === formData.name.toLowerCase() && 
+            project.creator.toLowerCase() === formData.creator.toLowerCase() &&
+            project.memberEmail === formData.memberEmail
+        );
+        
+        if (existingProject) {
+            console.error('Duplicate project found');
+            this.showNotification(
+                this.currentLanguage === 'en' 
+                    ? 'You have already submitted a project with this name!' 
+                    : 'لقد قمت بتقديم مشروع بهذا الاسم من قبل!'
             );
             this.resetSubmitButton();
             return;
