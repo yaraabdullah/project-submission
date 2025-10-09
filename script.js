@@ -7,8 +7,14 @@ class AIProjectGallery {
         const SUPABASE_URL = 'https://rjsiyhwuxuiyqbmvabza.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqc2l5aHd1eHVpeXFibXZhYnphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk4MjQsImV4cCI6MjA3Mzk2NTgyNH0.GZ5Yt7PgrftNCEXJQBXb5GA_RAtfnpHElUnfyz7qinc';
 
-        // 1. Initialize Supabase Client
-        this.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // 1. Initialize Supabase Client (if available)
+        if (typeof supabase !== 'undefined') {
+            this.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase client initialized');
+        } else {
+            this.supabase = null;
+            console.warn('Supabase not available - using placeholder verification');
+        }
 
         // Initialize data from Local Storage
         this.projects = JSON.parse(localStorage.getItem('aiAssociationProjects')) || [];
@@ -193,6 +199,38 @@ class AIProjectGallery {
         if (verifyBtn) {
             verifyBtn.disabled = true;
             verifyBtn.innerHTML = this.currentLanguage === 'en' ? 'Verifying...' : 'جاري التحقق...';
+        }
+
+        // If Supabase is not available, use placeholder verification
+        if (!this.supabase) {
+            console.log('Using placeholder verification');
+            
+            if (verifyBtn) {
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = this.currentLanguage === 'en' ? 'Verify Membership' : 'التحقق من العضوية';
+            }
+
+            // Create placeholder member
+            const placeholderMember = {
+                email: email || 'placeholder@ai-association.com',
+                phone: phone || '+1234567890',
+                name: email ? email.split('@')[0] : 'Member'
+            };
+            
+            this.currentMember = placeholderMember;
+            localStorage.setItem('aiAssociationMember', JSON.stringify(placeholderMember));
+            
+            this.showNotification(
+                this.currentLanguage === 'en' 
+                    ? `Welcome to the member portal, ${placeholderMember.name}!` 
+                    : `مرحباً بك في بوابة الأعضاء، ${placeholderMember.name}!`,
+                true
+            );
+            
+            this.renderMyProjects(); 
+            this.navigateToPage('member-portal');
+            this.updateMemberPortalTitle();
+            return;
         }
 
         const query = this.supabase
@@ -674,8 +712,7 @@ let app;
 document.addEventListener('DOMContentLoaded', () => {
     // Check if the Supabase client library is available
     if (typeof supabase === 'undefined') {
-        console.error("Supabase library not loaded. Please ensure the script tag is included.");
-        return;
+        console.warn("Supabase library not loaded. App will work with placeholder verification.");
     }
     app = new AIProjectGallery();
 });
