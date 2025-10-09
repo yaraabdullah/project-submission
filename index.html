@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Association - Project Submissions</title>
+    <title>AI Association - Project Gallery</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <!-- Header -->
@@ -18,18 +17,22 @@
                         <img src="white logo.png" alt="AI Association Logo" class="logo-image">
                     </div>
                     <div class="logo-text">
+                        <h1>AI Association</h1>
+                        <p>Project Gallery</p>
                     </div>
                 </div>
+                
                 <nav class="header-nav">
-                    <a href="#" class="nav-link active" data-page="submit" data-en="Projects Gallery" data-ar="معرض المشاريع">Projects Gallery</a>
-                    <a href="#" class="nav-link" data-page="my-projects" data-en="My Projects" data-ar="مشاريعي">My Projects</a>
+                    <a href="#" class="nav-link active" data-page="gallery">Projects Gallery</a>
+                    <a href="#" class="nav-link" data-page="membership">Member Portal</a>
                 </nav>
+                
                 <div class="header-controls">
-                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                        <span class="theme-icon">🌙</span>
+                    <button class="control-btn" id="themeToggle" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
                     </button>
-                    <button class="language-toggle" id="languageToggle" aria-label="Toggle language">
-                        <span class="lang-text">العربية</span>
+                    <button class="control-btn" id="languageToggle" title="Toggle Language">
+                        <i class="fas fa-language"></i>
                     </button>
                 </div>
             </div>
@@ -38,138 +41,129 @@
 
     <!-- Main Content -->
     <main class="main">
-        <div class="container">
-            <!-- Hero Section -->
+        <!-- Projects Gallery Page -->
+        <div class="container" id="galleryPage">
             <section class="hero">
                 <h1 class="hero-title" data-en="AI Projects Gallery" data-ar="معرض مشاريع الذكاء الاصطناعي">AI Projects Gallery</h1>
-                <p class="hero-subtitle" data-en="Explore amazing AI innovations from our community" data-ar="استكشف ابتكارات الذكاء الاصطناعي المذهلة من مجتمعنا">Explore amazing AI innovations from our community</p>
+                <p class="hero-subtitle" data-en="Discover innovative AI projects created by our talented members" data-ar="اكتشف مشاريع الذكاء الاصطناعي المبتكرة التي أنشأها أعضاؤنا الموهوبون">Discover innovative AI projects created by our talented members</p>
             </section>
 
+            <!-- Add Project Section -->
+            <section class="add-project-section">
+                <a href="#" class="add-project-link" data-page="membership">
+                    <i class="fas fa-plus"></i>
+                    <span data-en="Add Your Project" data-ar="أضف مشروعك">Add Your Project</span>
+                </a>
+            </section>
 
             <!-- Projects Grid -->
-            <section class="projects-section">
-                <h2 class="section-title" data-en="Featured Projects" data-ar="المشاريع المميزة">Featured Projects</h2>
-                <div class="projects-grid" id="projectsGrid">
-                    <!-- Projects will be dynamically added here -->
-                </div>
-            </section>
+            <div class="projects-grid" id="projectsGrid">
+                <!-- Projects will be displayed here -->
+            </div>
+
+            <!-- No Projects Message -->
+            <div class="no-projects-message" id="noProjectsMessage" style="display: none;">
+                <div class="no-projects-icon">🚀</div>
+                <h3 data-en="No Projects Yet" data-ar="لا توجد مشاريع بعد">No Projects Yet</h3>
+                <p data-en="Be the first to showcase your AI project!" data-ar="كن أول من يعرض مشروع الذكاء الاصطناعي الخاص به!">Be the first to showcase your AI project!</p>
+            </div>
         </div>
-    </main>
 
-    <!-- My Projects Page -->
-    <main class="main my-projects-page" id="myProjectsPage" style="display: none;">
-        <div class="container">
-            <!-- Page Header -->
-            <section class="page-header">
-                <h1 class="page-title" data-en="My Projects" data-ar="مشاريعي">My Projects</h1>
-                <p class="page-subtitle" data-en="Submit, manage and edit your projects" data-ar="قدم وأدر وتحرير مشاريعك">Submit, manage and edit your projects</p>
-            </section>
-
-            <!-- GitHub Integration -->
-            <section class="github-section">
-                <div class="github-card">
-                    <div class="github-header">
-                        <div class="github-icon">🐙</div>
-                        <h3 data-en="Connect with GitHub" data-ar="اتصل بـ GitHub">Connect with GitHub</h3>
-                    </div>
-                    <div class="github-content" id="githubContent">
-                        <div class="github-login" id="githubLogin">
-                            <p data-en="Connect your GitHub account to automatically fetch your repositories and profile information." data-ar="اتصل بحساب GitHub الخاص بك لجلب مستودعاتك ومعلومات ملفك الشخصي تلقائياً.">Connect your GitHub account to automatically fetch your repositories and profile information.</p>
-                            <button class="github-btn" id="githubLoginBtn">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                                </svg>
-                                <span data-en="Login with GitHub" data-ar="تسجيل الدخول بـ GitHub">Login with GitHub</span>
-                            </button>
-                        </div>
-                        <div class="github-profile" id="githubProfile" style="display: none;">
-                            <div class="profile-info">
-                                <img id="githubAvatar" src="" alt="GitHub Avatar" class="profile-avatar">
-                                <div class="profile-details">
-                                    <h4 id="githubName"></h4>
-                                    <p id="githubUsername"></p>
-                                </div>
-                            </div>
-                            <button class="github-btn secondary" id="githubLogoutBtn" data-en="Logout" data-ar="تسجيل الخروج">Logout</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Submission Form -->
-            <section class="submission-section">
-                <div class="submission-card">
-                    <h2 class="section-title" data-en="Submit Your Project" data-ar="قدم مشروعك">Submit Your Project</h2>
-                    <form class="submission-form" id="submissionForm">
+        <!-- Membership Verification Page -->
+        <div class="container" id="membershipPage" style="display: none;">
+            <div class="membership-page">
+                <div class="membership-card">
+                    <h2 class="membership-title" data-en="Member Verification" data-ar="التحقق من العضوية">Member Verification</h2>
+                    <p class="membership-subtitle" data-en="Please enter your registered email or phone number to access the member portal" data-ar="يرجى إدخال بريدك الإلكتروني أو رقم هاتفك المسجل للوصول إلى بوابة الأعضاء">Please enter your registered email or phone number to access the member portal</p>
+                    
+                    <form id="membershipForm">
                         <div class="form-group">
-                            <label for="projectName" data-en="Project Name" data-ar="اسم المشروع">Project Name</label>
-                            <input type="text" id="projectName" name="projectName" required>
+                            <label for="memberEmail" class="form-label" data-en="Email Address" data-ar="البريد الإلكتروني">Email Address</label>
+                            <input type="email" id="memberEmail" class="form-input" placeholder="your.email@example.com">
                         </div>
                         
                         <div class="form-group">
-                            <label for="creatorName" data-en="Creator Name" data-ar="اسم المبدع">Creator Name</label>
-                            <input type="text" id="creatorName" name="creatorName" required>
+                            <label for="memberPhone" class="form-label" data-en="Phone Number (Optional)" data-ar="رقم الهاتف (اختياري)">Phone Number (Optional)</label>
+                            <input type="tel" id="memberPhone" class="form-input" placeholder="+1 (555) 123-4567">
                         </div>
                         
-                        <div class="form-group">
-                            <label for="projectLink" data-en="Project Link (GitHub, Demo, etc.)" data-ar="رابط المشروع (GitHub، عرض تجريبي، إلخ)">Project Link (GitHub, Demo, etc.)</label>
-                            <div class="input-with-button">
-                                <input type="url" id="projectLink" name="projectLink" required>
-                                <button type="button" class="fetch-repo-btn" id="fetchRepoBtn" data-en="Fetch from GitHub" data-ar="جلب من GitHub" disabled>Fetch from GitHub</button>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group" id="repoSelector" style="display: none;">
-                            <label data-en="Select Repository" data-ar="اختر المستودع">Select Repository</label>
-                            <select id="repoSelect" name="repoSelect">
-                                <option value="" data-en="Choose a repository..." data-ar="اختر مستودعاً...">Choose a repository...</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="projectDescription" data-en="Project Description" data-ar="وصف المشروع">Project Description</label>
-                            <textarea id="projectDescription" name="projectDescription" rows="4" required></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="projectImage" data-en="Project Image (Optional)" data-ar="صورة المشروع (اختياري)">Project Image (Optional)</label>
-                            <input type="file" id="projectImage" name="projectImage" accept="image/*">
-                            <div class="file-info" data-en="If no image is provided, a default image will be used" data-ar="إذا لم يتم توفير صورة، سيتم استخدام صورة افتراضية">If no image is provided, a default image will be used</div>
-                        </div>
-                        
-                        <button type="submit" class="submit-btn" data-en="Submit Project" data-ar="تقديم المشروع">Submit Project</button>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span data-en="Verify Membership" data-ar="التحقق من العضوية">Verify Membership</span>
+                        </button>
                     </form>
-                </div>
-            </section>
-
-            <!-- Projects Management -->
-            <section class="my-projects-section">
-                <div class="projects-controls">
-                    <div class="projects-stats">
-                        <span class="stat-item" data-en="Total Projects:" data-ar="إجمالي المشاريع:">Total Projects: <strong id="totalProjects">0</strong></span>
-                        <span class="stat-item" data-en="GitHub Projects:" data-ar="مشاريع GitHub:">GitHub Projects: <strong id="githubProjects">0</strong></span>
+                    
+                    <div class="membership-error" id="membershipError" style="display: none; color: var(--error); text-align: center; margin-top: 1rem;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span data-en="Invalid credentials. Please check your email or phone number." data-ar="بيانات اعتماد غير صحيحة. يرجى التحقق من بريدك الإلكتروني أو رقم هاتفك.">Invalid credentials. Please check your email or phone number.</span>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="my-projects-grid" id="myProjectsGrid">
-                    <!-- User's projects will be displayed here -->
+        <!-- Member Portal Page -->
+        <div class="container" id="memberPortalPage" style="display: none;">
+            <div class="member-portal">
+                <div class="portal-header">
+                    <h1 class="portal-title" data-en="Member Portal" data-ar="بوابة الأعضاء">Member Portal</h1>
+                    <p class="portal-subtitle" data-en="Welcome back! Manage your projects and submit new ones." data-ar="مرحباً بعودتك! أدر مشاريعك وقدم مشاريع جديدة.">Welcome back! Manage your projects and submit new ones.</p>
                 </div>
 
-                <div class="no-projects-message" id="noProjectsMessage" style="display: none;">
-                    <div class="no-projects-icon">📁</div>
-                    <h3 data-en="No Projects Yet" data-ar="لا توجد مشاريع بعد">No Projects Yet</h3>
-                    <p data-en="You haven't submitted any projects yet. Use the form above to submit your first project!" data-ar="لم تقم بتقديم أي مشاريع بعد. استخدم النموذج أعلاه لتقديم مشروعك الأول!">You haven't submitted any projects yet. Use the form above to submit your first project!</p>
-                </div>
-            </section>
+                <!-- Project Submission Form -->
+                <section class="submission-section">
+                    <div class="membership-card">
+                        <h3 data-en="Submit New Project" data-ar="تقديم مشروع جديد">Submit New Project</h3>
+                        
+                        <form id="submissionForm">
+                            <div class="form-group">
+                                <label for="projectName" class="form-label" data-en="Project Name" data-ar="اسم المشروع">Project Name</label>
+                                <input type="text" id="projectName" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="creatorName" class="form-label" data-en="Your Name" data-ar="اسمك">Your Name</label>
+                                <input type="text" id="creatorName" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="projectLink" class="form-label" data-en="Project Link (GitHub, Demo, etc.)" data-ar="رابط المشروع (GitHub، عرض تجريبي، إلخ)">Project Link (GitHub, Demo, etc.)</label>
+                                <input type="url" id="projectLink" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="projectDescription" class="form-label" data-en="Project Description" data-ar="وصف المشروع">Project Description</label>
+                                <textarea id="projectDescription" class="form-input form-textarea" required></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-paper-plane"></i>
+                                <span data-en="Submit Project" data-ar="تقديم المشروع">Submit Project</span>
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- My Projects Section -->
+                <section class="my-projects-section">
+                    <div class="projects-controls">
+                        <div class="projects-stats">
+                            <span class="stat-item" data-en="Total Projects:" data-ar="إجمالي المشاريع:">Total Projects: <strong id="totalProjects">0</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="my-projects-grid" id="myProjectsGrid">
+                        <!-- User's projects will be displayed here -->
+                    </div>
+
+                    <div class="no-projects-message" id="noMyProjectsMessage" style="display: none;">
+                        <div class="no-projects-icon">📁</div>
+                        <h3 data-en="No Projects Yet" data-ar="لا توجد مشاريع بعد">No Projects Yet</h3>
+                        <p data-en="You haven't submitted any projects yet. Use the form above to submit your first project!" data-ar="لم تقم بتقديم أي مشاريع بعد. استخدم النموذج أعلاه لتقديم مشروعك الأول!">You haven't submitted any projects yet. Use the form above to submit your first project!</p>
+                    </div>
+                </section>
+            </div>
         </div>
     </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p class="footer-text" data-en="© 2024 AI Association. All rights reserved." data-ar="© 2024 جمعية الذكاء الاصطناعي. جميع الحقوق محفوظة.">© 2024 AI Association. All rights reserved.</p>
-        </div>
-    </footer>
 
     <script src="script.js"></script>
 </body>
