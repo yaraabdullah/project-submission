@@ -443,6 +443,9 @@ class ProjectSubmissionApp {
 
     // My Projects Methods
     renderMyProjects() {
+        console.log('Rendering my projects. Total projects:', this.projects.length);
+        console.log('Projects:', this.projects);
+        
         const myProjectsGrid = document.getElementById('myProjectsGrid');
         const noProjectsMessage = document.getElementById('noProjectsMessage');
         const totalProjectsEl = document.getElementById('totalProjects');
@@ -468,6 +471,7 @@ class ProjectSubmissionApp {
             myProjectsGrid.style.display = 'grid';
 
             this.projects.forEach(project => {
+                console.log('Creating card for project:', project);
                 const projectCard = this.createMyProjectCard(project);
                 myProjectsGrid.appendChild(projectCard);
             });
@@ -513,8 +517,14 @@ class ProjectSubmissionApp {
     }
 
     editProject(projectId) {
+        console.log('Edit project called with ID:', projectId);
         const project = this.projects.find(p => p.id === projectId);
-        if (!project) return;
+        if (!project) {
+            console.error('Project not found with ID:', projectId);
+            return;
+        }
+
+        console.log('Found project:', project);
 
         // Fill form with project data
         document.getElementById('projectName').value = project.name;
@@ -540,8 +550,14 @@ class ProjectSubmissionApp {
     }
 
     deleteProject(projectId) {
+        console.log('Delete project called with ID:', projectId);
         const project = this.projects.find(p => p.id === projectId);
-        if (!project) return;
+        if (!project) {
+            console.error('Project not found with ID:', projectId);
+            return;
+        }
+
+        console.log('Found project to delete:', project);
 
         const confirmMessage = this.currentLanguage === 'en' 
             ? `Are you sure you want to delete "${project.name}"?` 
@@ -705,8 +721,9 @@ class ProjectSubmissionApp {
 }
 
 // Initialize the app when DOM is loaded
+let app;
 document.addEventListener('DOMContentLoaded', () => {
-    new ProjectSubmissionApp();
+    app = new ProjectSubmissionApp();
 });
 
 // Add some utility functions for better UX
