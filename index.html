@@ -21,7 +21,7 @@
                     </div>
                 </div>
                 <nav class="header-nav">
-                    <a href="#" class="nav-link active" data-page="submit" data-en="Submit Project" data-ar="تقديم مشروع">Submit Project</a>
+                    <a href="#" class="nav-link active" data-page="submit" data-en="Projects Gallery" data-ar="معرض المشاريع">Projects Gallery</a>
                     <a href="#" class="nav-link" data-page="my-projects" data-en="My Projects" data-ar="مشاريعي">My Projects</a>
                 </nav>
                 <div class="header-controls">
@@ -41,8 +41,28 @@
         <div class="container">
             <!-- Hero Section -->
             <section class="hero">
-                <h1 class="hero-title" data-en="Project Submissions" data-ar="تقديم المشاريع">Project Submissions</h1>
-                <p class="hero-subtitle" data-en="Share your AI innovations with the community" data-ar="شارك ابتكاراتك في الذكاء الاصطناعي مع المجتمع">Share your AI innovations with the community</p>
+                <h1 class="hero-title" data-en="AI Projects Gallery" data-ar="معرض مشاريع الذكاء الاصطناعي">AI Projects Gallery</h1>
+                <p class="hero-subtitle" data-en="Explore amazing AI innovations from our community" data-ar="استكشف ابتكارات الذكاء الاصطناعي المذهلة من مجتمعنا">Explore amazing AI innovations from our community</p>
+            </section>
+
+
+            <!-- Projects Grid -->
+            <section class="projects-section">
+                <h2 class="section-title" data-en="Featured Projects" data-ar="المشاريع المميزة">Featured Projects</h2>
+                <div class="projects-grid" id="projectsGrid">
+                    <!-- Projects will be dynamically added here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- My Projects Page -->
+    <main class="main my-projects-page" id="myProjectsPage" style="display: none;">
+        <div class="container">
+            <!-- Page Header -->
+            <section class="page-header">
+                <h1 class="page-title" data-en="My Projects" data-ar="مشاريعي">My Projects</h1>
+                <p class="page-subtitle" data-en="Submit, manage and edit your projects" data-ar="قدم وأدر وتحرير مشاريعك">Submit, manage and edit your projects</p>
             </section>
 
             <!-- GitHub Integration -->
@@ -122,25 +142,6 @@
                 </div>
             </section>
 
-            <!-- Projects Grid -->
-            <section class="projects-section">
-                <h2 class="section-title" data-en="Featured Projects" data-ar="المشاريع المميزة">Featured Projects</h2>
-                <div class="projects-grid" id="projectsGrid">
-                    <!-- Projects will be dynamically added here -->
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <!-- My Projects Page -->
-    <main class="main my-projects-page" id="myProjectsPage" style="display: none;">
-        <div class="container">
-            <!-- Page Header -->
-            <section class="page-header">
-                <h1 class="page-title" data-en="My Projects" data-ar="مشاريعي">My Projects</h1>
-                <p class="page-subtitle" data-en="Manage and edit your submitted projects" data-ar="إدارة وتحرير مشاريعك المقدمة">Manage and edit your submitted projects</p>
-            </section>
-
             <!-- Projects Management -->
             <section class="my-projects-section">
                 <div class="projects-controls">
@@ -148,7 +149,6 @@
                         <span class="stat-item" data-en="Total Projects:" data-ar="إجمالي المشاريع:">Total Projects: <strong id="totalProjects">0</strong></span>
                         <span class="stat-item" data-en="GitHub Projects:" data-ar="مشاريع GitHub:">GitHub Projects: <strong id="githubProjects">0</strong></span>
                     </div>
-                    <button class="add-project-btn" id="addProjectBtn" data-en="Add New Project" data-ar="إضافة مشروع جديد">Add New Project</button>
                 </div>
 
                 <div class="my-projects-grid" id="myProjectsGrid">
@@ -158,8 +158,7 @@
                 <div class="no-projects-message" id="noProjectsMessage" style="display: none;">
                     <div class="no-projects-icon">📁</div>
                     <h3 data-en="No Projects Yet" data-ar="لا توجد مشاريع بعد">No Projects Yet</h3>
-                    <p data-en="You haven't submitted any projects yet. Click 'Add New Project' to get started!" data-ar="لم تقم بتقديم أي مشاريع بعد. انقر على 'إضافة مشروع جديد' للبدء!">You haven't submitted any projects yet. Click 'Add New Project' to get started!</p>
-                    <button class="add-project-btn primary" onclick="document.querySelector('[data-page=submit]').click()" data-en="Submit Your First Project" data-ar="قدم مشروعك الأول">Submit Your First Project</button>
+                    <p data-en="You haven't submitted any projects yet. Use the form above to submit your first project!" data-ar="لم تقم بتقديم أي مشاريع بعد. استخدم النموذج أعلاه لتقديم مشروعك الأول!">You haven't submitted any projects yet. Use the form above to submit your first project!</p>
                 </div>
             </section>
         </div>

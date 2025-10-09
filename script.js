@@ -57,11 +57,6 @@ class ProjectSubmissionApp {
             link.addEventListener('click', (e) => this.handleNavigation(e));
         });
 
-        // Add project button
-        const addProjectBtn = document.getElementById('addProjectBtn');
-        if (addProjectBtn) {
-            addProjectBtn.addEventListener('click', () => this.navigateToPage('submit'));
-        }
     }
 
     toggleTheme() {
@@ -521,9 +516,6 @@ class ProjectSubmissionApp {
         const project = this.projects.find(p => p.id === projectId);
         if (!project) return;
 
-        // Navigate to submit page and populate form
-        this.navigateToPage('submit');
-        
         // Fill form with project data
         document.getElementById('projectName').value = project.name;
         document.getElementById('creatorName').value = project.creator;
@@ -536,6 +528,9 @@ class ProjectSubmissionApp {
         // Change submit button text
         const submitBtn = document.querySelector('.submit-btn');
         submitBtn.textContent = this.currentLanguage === 'en' ? 'Update Project' : 'تحديث المشروع';
+        
+        // Scroll to form
+        document.getElementById('submissionForm').scrollIntoView({ behavior: 'smooth' });
         
         this.showNotification(
             this.currentLanguage === 'en' 
