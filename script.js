@@ -187,6 +187,20 @@ class AIProjectGallery {
         console.log('Project submission form submitted');
         console.log('Current member:', this.currentMember);
         
+        // Prevent multiple submissions
+        const submitBtn = document.querySelector('.btn-primary');
+        if (submitBtn.disabled) {
+            console.log('Form already being submitted, ignoring');
+            return;
+        }
+        
+        // Disable submit button
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <div class="spinner"></div>
+            <span>${this.currentLanguage === 'en' ? 'Submitting...' : 'جاري التقديم...'}</span>
+        `;
+        
         if (!this.currentMember) {
             console.error('No current member found');
             this.showNotification(
@@ -194,6 +208,7 @@ class AIProjectGallery {
                     ? 'Please verify your membership first!' 
                     : 'يرجى التحقق من العضوية أولاً!'
             );
+            this.resetSubmitButton();
             return;
         }
         
@@ -216,6 +231,7 @@ class AIProjectGallery {
                     ? 'Please fill in all required fields!' 
                     : 'يرجى ملء جميع الحقول المطلوبة!'
             );
+            this.resetSubmitButton();
             return;
         }
         
@@ -308,6 +324,17 @@ class AIProjectGallery {
         document.getElementById('submissionForm').scrollIntoView({ behavior: 'smooth' });
     }
 
+    resetSubmitButton() {
+        const submitBtn = document.querySelector('.btn-primary');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `
+                <i class="fas fa-paper-plane"></i>
+                <span>${this.currentLanguage === 'en' ? 'Submit Project' : 'تقديم المشروع'}</span>
+            `;
+        }
+    }
+
     resetForm() {
         console.log('Resetting form');
         const form = document.getElementById('submissionForm');
@@ -319,16 +346,7 @@ class AIProjectGallery {
             console.error('Form not found for reset');
         }
         
-        const submitBtn = document.querySelector('.btn-primary');
-        if (submitBtn) {
-            submitBtn.innerHTML = `
-                <i class="fas fa-paper-plane"></i>
-                <span>${this.currentLanguage === 'en' ? 'Submit Project' : 'تقديم المشروع'}</span>
-            `;
-            console.log('Submit button text reset');
-        } else {
-            console.error('Submit button not found for reset');
-        }
+        this.resetSubmitButton();
     }
 
     // Rendering
@@ -373,14 +391,28 @@ class AIProjectGallery {
     }
 
     renderMyProjects() {
+        console.log('Rendering my projects');
+        console.log('Current member:', this.currentMember);
+        console.log('All projects:', this.projects);
+        
         const myProjectsGrid = document.getElementById('myProjectsGrid');
         const noProjectsMessage = document.getElementById('noMyProjectsMessage');
         const totalProjectsEl = document.getElementById('totalProjects');
+        
+        if (!this.currentMember) {
+            console.log('No current member, showing empty state');
+            totalProjectsEl.textContent = '0';
+            myProjectsGrid.style.display = 'none';
+            noProjectsMessage.style.display = 'block';
+            return;
+        }
         
         // Filter projects for current member
         const memberProjects = this.projects.filter(project => 
             project.memberEmail === this.currentMember.email
         );
+        
+        console.log('Member projects:', memberProjects);
         
         totalProjectsEl.textContent = memberProjects.length;
         
