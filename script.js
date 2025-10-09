@@ -1,4 +1,4 @@
-// Professional AI Association Project Gallery - SUPABASE INTEGRATED
+// Professional AI Association Project Gallery - SUPABASE INTEGRATED (FIXED)
 class AIProjectGallery {
     constructor() {
         console.log('Initializing AI Project Gallery...');
@@ -10,16 +10,39 @@ class AIProjectGallery {
         // 1. Initialize Supabase Client
         this.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Remove the static memberDatabase simulation
-        // this.memberDatabase = [...]; 
-
-        // Initialize data from Local Storage (rest remains the same)
+        // Initialize data from Local Storage
         this.projects = JSON.parse(localStorage.getItem('aiAssociationProjects')) || [];
+        
+        // 🛑 FIX: Normalize emails immediately after loading projects
+        this.normalizeProjectEmails(); 
+
         this.currentLanguage = localStorage.getItem('aiAssociationLanguage') || 'en';
         this.currentTheme = localStorage.getItem('aiAssociationTheme') || 'light';
         this.currentMember = JSON.parse(localStorage.getItem('aiAssociationMember')) || null;
         
         this.init();
+    }
+    
+    // 🛑 NEW FUNCTION: Ensures all stored project emails are lowercase for filtering
+    normalizeProjectEmails() {
+        let needsUpdate = false;
+        
+        this.projects = this.projects.map(project => {
+            if (project.memberEmail) {
+                const normalizedEmail = project.memberEmail.toLowerCase();
+                
+                if (project.memberEmail !== normalizedEmail) {
+                    project.memberEmail = normalizedEmail;
+                    needsUpdate = true;
+                }
+            }
+            return project;
+        });
+
+        if (needsUpdate) {
+            console.log('Normalized project emails in local storage.');
+            localStorage.setItem('aiAssociationProjects', JSON.stringify(this.projects));
+        }
     }
 
     init() {
@@ -163,7 +186,7 @@ class AIProjectGallery {
         });
     }
 
-    // --- Membership Verification - 🛑 CRITICAL UPDATE FOR SUPABASE 🛑 ---
+    // --- Membership Verification - Supabase Logic ---
 
     async handleMembershipVerification(e) {
         e.preventDefault();
@@ -180,8 +203,8 @@ class AIProjectGallery {
             verifyBtn.innerHTML = this.currentLanguage === 'en' ? 'Verifying...' : 'جاري التحقق...';
         }
 
-        // 1. Build the Supabase query using `.or()` for email/phone matching
-        // Assumes your table is named 'members' and has columns 'email', 'phone', 'payment_status', 'name'.
+        // 1. Build the Supabase query
+        // NOTE: Assumes your Supabase table is named 'members' and columns are 'email', 'phone', 'full_name', 'payment_status'.
         const query = this.supabase
             .from('members')
             .select('email, phone, full_name, payment_status')
@@ -325,7 +348,7 @@ class AIProjectGallery {
         const submitBtn = document.querySelector('#submissionForm .btn-primary');
         if (!submitBtn) return false;
         
-        // 1. Check for logged-in member (now ensured by Supabase verification)
+        // 1. Check for logged-in member 
         if (!this.currentMember) {
             this.showNotification(this.currentLanguage === 'en' ? 'Please verify your membership first!' : 'يرجى التحقق من العضوية أولاً!');
             this.resetSubmitButton();
@@ -436,7 +459,7 @@ class AIProjectGallery {
         this.resetSubmitButton();
     }
 
-    // --- Rendering (No change in logic, filtering is now reliable) ---
+    // --- Rendering ---
 
     renderProjects() {
         const projectsGrid = document.getElementById('projectsGrid');
@@ -494,6 +517,7 @@ class AIProjectGallery {
             return;
         }
 
+        // This filtering is now reliable because both sides are forced to be lowercase
         const memberEmail = this.currentMember.email.toLowerCase();
         
         const memberProjects = this.projects.filter(project => 
