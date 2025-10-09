@@ -59,6 +59,23 @@ class ProjectSubmissionApp {
             link.addEventListener('click', (e) => this.handleNavigation(e));
         });
 
+        // Event delegation for My Projects page buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.action-btn')) {
+                const button = e.target.closest('.action-btn');
+                const action = button.getAttribute('data-action');
+                const projectId = button.getAttribute('data-project-id');
+                
+                console.log('Button clicked:', action, 'for project:', projectId);
+                
+                if (action === 'edit') {
+                    this.editProject(projectId);
+                } else if (action === 'delete') {
+                    this.deleteProject(projectId);
+                }
+            }
+        });
+
     }
 
     toggleTheme() {
@@ -507,10 +524,10 @@ class ProjectSubmissionApp {
             <div class="project-header">
                 <h3 class="project-title">${this.escapeHtml(project.name)}</h3>
                 <div class="project-actions">
-                    <button class="action-btn edit-btn" onclick="app.editProject('${project.id}')" title="${this.currentLanguage === 'en' ? 'Edit Project' : 'تحرير المشروع'}">
+                    <button class="action-btn edit-btn" data-action="edit" data-project-id="${project.id}" title="${this.currentLanguage === 'en' ? 'Edit Project' : 'تحرير المشروع'}">
                         ✏️
                     </button>
-                    <button class="action-btn delete-btn" onclick="app.deleteProject('${project.id}')" title="${this.currentLanguage === 'en' ? 'Delete Project' : 'حذف المشروع'}">
+                    <button class="action-btn delete-btn" data-action="delete" data-project-id="${project.id}" title="${this.currentLanguage === 'en' ? 'Delete Project' : 'حذف المشروع'}">
                         🗑️
                     </button>
                 </div>
