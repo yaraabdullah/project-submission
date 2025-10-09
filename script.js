@@ -37,11 +37,61 @@ class AIProjectGallery {
         // Membership form
         document.getElementById('membershipForm').addEventListener('submit', (e) => this.handleMembershipVerification(e));
         
-        // Project submission form
+        // Project submission form - SIMPLE APPROACH
         const submissionForm = document.getElementById('submissionForm');
         console.log('Submission form element:', submissionForm);
         if (submissionForm) {
-            submissionForm.addEventListener('submit', (e) => this.handleProjectSubmission(e));
+            submissionForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                console.log('FORM SUBMITTED!');
+                
+                // Get form data
+                const name = document.getElementById('projectName').value.trim();
+                const creator = document.getElementById('creatorName').value.trim();
+                const link = document.getElementById('projectLink').value.trim();
+                const description = document.getElementById('projectDescription').value.trim();
+                
+                console.log('Form data:', { name, creator, link, description });
+                
+                if (!name || !creator || !link || !description) {
+                    alert('Please fill in all fields!');
+                    return;
+                }
+                
+                if (!this.currentMember) {
+                    alert('Please verify your membership first!');
+                    return;
+                }
+                
+                // Create project
+                const project = {
+                    id: Date.now().toString(),
+                    name: name,
+                    creator: creator,
+                    link: link,
+                    description: description,
+                    submittedAt: new Date().toISOString(),
+                    memberEmail: this.currentMember.email
+                };
+                
+                console.log('Adding project:', project);
+                
+                // Add to projects array
+                this.projects.unshift(project);
+                localStorage.setItem('aiAssociationProjects', JSON.stringify(this.projects));
+                
+                // Update displays
+                this.renderProjects();
+                this.renderMyProjects();
+                
+                // Clear form
+                submissionForm.reset();
+                
+                // Show success message
+                alert('Project submitted successfully!');
+                
+                console.log('Project added successfully!');
+            });
         } else {
             console.error('Submission form not found!');
         }
