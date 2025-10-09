@@ -4,7 +4,7 @@ class AIProjectGallery {
         console.log('Initializing AI Project Gallery...');
 
         // 🛑 IMPORTANT: Replace these with your actual Supabase details
-        const SUPABASE_URL = 'https://rjsiyhwuxuiyqbmvabza.supabase.co'; // e.g., https://abcde12345.supabase.co
+        const SUPABASE_URL = 'https://rjsiyhwuxuiyqbmvabza.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqc2l5aHd1eHVpeXFibXZhYnphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk4MjQsImV4cCI6MjA3Mzk2NTgyNH0.GZ5Yt7PgrftNCEXJQBXb5GA_RAtfnpHElUnfyz7qinc';
 
         // 1. Initialize Supabase Client
@@ -12,9 +12,7 @@ class AIProjectGallery {
 
         // Initialize data from Local Storage
         this.projects = JSON.parse(localStorage.getItem('aiAssociationProjects')) || [];
-        
-        // 🛑 FIX: Normalize emails immediately after loading projects
-        this.normalizeProjectEmails(); 
+        this.normalizeProjectEmails(); // Keep this for existing data consistency
 
         this.currentLanguage = localStorage.getItem('aiAssociationLanguage') || 'en';
         this.currentTheme = localStorage.getItem('aiAssociationTheme') || 'light';
@@ -23,7 +21,7 @@ class AIProjectGallery {
         this.init();
     }
     
-    // 🛑 NEW FUNCTION: Ensures all stored project emails are lowercase for filtering
+    // Ensures all stored project emails are lowercase for filtering
     normalizeProjectEmails() {
         let needsUpdate = false;
         
@@ -51,24 +49,19 @@ class AIProjectGallery {
         this.applyLanguage();
         this.renderProjects();
         this.checkCurrentPage(); 
+        // 🛑 NEW: Update portal title on init if a member is already logged in
+        this.updateMemberPortalTitle(); 
     }
 
     setupEventListeners() {
-        // Theme toggle
+        // ... (existing event listeners) ...
         document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
-        
-        // Language toggle
         document.getElementById('languageToggle').addEventListener('click', () => this.toggleLanguage());
-        
-        // Navigation
         document.querySelectorAll('.nav-link, .add-project-link').forEach(link => {
             link.addEventListener('click', (e) => this.handleNavigation(e));
         });
-        
-        // Membership form - NOW ASYNCHRONOUS
         document.getElementById('membershipForm').addEventListener('submit', (e) => this.handleMembershipVerification(e));
         
-        // Project submission form 
         const submissionForm = document.getElementById('submissionForm');
         if (submissionForm) {
             submissionForm.addEventListener('submit', (e) => {
@@ -88,7 +81,6 @@ class AIProjectGallery {
             });
         }
         
-        // Event delegation for project actions (Edit/Delete buttons)
         document.addEventListener('click', (e) => {
             if (e.target.closest('.action-btn')) {
                 const button = e.target.closest('.action-btn');
@@ -104,8 +96,6 @@ class AIProjectGallery {
         });
     }
 
-    // --- Navigation (No change) ---
-    
     handleNavigation(e) {
         e.preventDefault();
         
@@ -118,14 +108,12 @@ class AIProjectGallery {
     }
 
     navigateToPage(page) {
-        // Hide all pages
         const pages = ['galleryPage', 'membershipPage', 'memberPortalPage'];
         pages.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.style.display = 'none';
         });
         
-        // Update active nav link
         document.querySelectorAll('.nav-link').forEach(link => {
             link.classList.remove('active');
             if (link.getAttribute('data-page') === page) {
@@ -133,7 +121,6 @@ class AIProjectGallery {
             }
         });
         
-        // Show target page
         if (page === 'gallery') {
             const galleryPage = document.getElementById('galleryPage');
             if (galleryPage) galleryPage.style.display = 'block';
@@ -147,14 +134,13 @@ class AIProjectGallery {
             if (this.currentMember && portalPage) {
                 portalPage.style.display = 'block';
                 this.renderMyProjects();
+                this.updateMemberPortalTitle(); // 🛑 Ensure title updates on navigation too
             } else {
                 this.navigateToPage('membership');
             }
         }
     }
     
-    // --- Theme & Language Management (No change) ---
-
     toggleTheme() {
         this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
         localStorage.setItem('aiAssociationTheme', this.currentTheme);
@@ -184,6 +170,8 @@ class AIProjectGallery {
                 element.textContent = this.currentLanguage === 'en' ? enText : arText;
             }
         });
+        // 🛑 NEW: Re-update portal title after language change
+        this.updateMemberPortalTitle(); 
     }
 
     // --- Membership Verification - Supabase Logic ---
@@ -197,26 +185,20 @@ class AIProjectGallery {
         const form = document.getElementById('membershipForm');
         const verifyBtn = form ? form.querySelector('.btn-primary') : null;
 
-        // Simple loading state
         if (verifyBtn) {
             verifyBtn.disabled = true;
             verifyBtn.innerHTML = this.currentLanguage === 'en' ? 'Verifying...' : 'جاري التحقق...';
         }
 
-        // 1. Build the Supabase query
-        // NOTE: Assumes your Supabase table is named 'members' and columns are 'email', 'phone', 'full_name', 'payment_status'.
         const query = this.supabase
             .from('members')
-            .select('email, phone, full_name, payment_status')
-            // Match email OR phone
+            .select('email, phone, full_name, payment_status') 
             .or(`email.eq.${email},phone.eq.${phone}`)
-            // Filter by required payment status
-            .eq('payment_status', 'completed')
+            .eq('payment_status', 'completed') 
             .limit(1);
 
         const { data, error } = await query;
         
-        // Reset button state regardless of outcome
         if (verifyBtn) {
             verifyBtn.disabled = false;
             verifyBtn.innerHTML = this.currentLanguage === 'en' ? 'Verify Membership' : 'التحقق من العضوية';
@@ -225,7 +207,8 @@ class AIProjectGallery {
         if (error) {
             console.error('Supabase Error:', error);
             this.showNotification(
-                this.currentLanguage === 'en' ? 'Database connection error. Try again.' : 'خطأ في الاتصال بقاعدة البيانات. حاول مرة أخرى.'
+                this.currentLanguage === 'en' ? 'Database connection error. Try again.' : 'خطأ في الاتصال بقاعدة البيانات. حاول مرة أخرى.',
+                false // Indicate failure for color
             );
             return;
         }
@@ -233,10 +216,9 @@ class AIProjectGallery {
         const verifiedMember = data.length > 0 ? data[0] : null;
 
         if (verifiedMember) {
-            // 2. Set currentMember based on the database record
             this.currentMember = {
-                email: verifiedMember.email.toLowerCase(), // Ensure consistency
-                name: verifiedMember.full_name,
+                email: verifiedMember.email.toLowerCase(), 
+                name: verifiedMember.full_name, // Assumes 'full_name' is the column name for the user's name
                 phone: verifiedMember.phone
             };
             localStorage.setItem('aiAssociationMember', JSON.stringify(this.currentMember));
@@ -244,21 +226,24 @@ class AIProjectGallery {
             this.showNotification(
                 this.currentLanguage === 'en' 
                 ? `Welcome back, ${verifiedMember.full_name}! You are verified.` 
-                : `مرحباً بعودتك، ${verifiedMember.full_name}! تم التحقق.`
+                : `مرحباً بعودتك، ${verifiedMember.full_name}! تم التحقق.`,
+                true // Indicate success for color
             );
             
             this.renderMyProjects(); 
             this.navigateToPage('member-portal');
+            this.updateMemberPortalTitle(); // 🛑 Update title after successful login
         } else {
-            // 3. Handle non-member/non-paid case
             this.currentMember = null;
             localStorage.removeItem('aiAssociationMember');
 
             this.showNotification(
                 this.currentLanguage === 'en' 
                 ? 'Verification failed. Membership details not found or payment incomplete.' 
-                : 'فشل التحقق. لم يتم العثور على التفاصيل أو الدفع غير مكتمل.'
+                : 'فشل التحقق. لم يتم العثور على التفاصيل أو الدفع غير مكتمل.',
+                false // Indicate failure for color
             );
+             this.updateMemberPortalTitle(); // 🛑 Reset title if login fails
         }
     }
 
@@ -267,8 +252,6 @@ class AIProjectGallery {
         if (form) form.reset();
     }
 
-    // --- Project Submission and Update (No functional change needed) ---
-
     getFormData() {
         return {
             name: document.getElementById('projectName').value.trim(),
@@ -276,7 +259,6 @@ class AIProjectGallery {
             link: document.getElementById('projectLink').value.trim(),
             description: document.getElementById('projectDescription').value.trim(),
             submittedAt: new Date().toISOString(),
-            // Ensure email is lowercased for consistent filtering
             memberEmail: this.currentMember ? this.currentMember.email.toLowerCase() : '' 
         };
     }
@@ -289,7 +271,6 @@ class AIProjectGallery {
             return;
         }
 
-        // Check for duplicate projects
         const existingProject = this.projects.find(project => 
             project.name.toLowerCase() === formData.name.toLowerCase() && 
             project.creator.toLowerCase() === formData.creator.toLowerCase() &&
@@ -300,7 +281,8 @@ class AIProjectGallery {
             this.showNotification(
                 this.currentLanguage === 'en' 
                     ? 'You have already submitted a project with this name!' 
-                    : 'لقد قمت بتقديم مشروع بهذا الاسم من قبل!'
+                    : 'لقد قمت بتقديم مشروع بهذا الاسم من قبل!',
+                false // Indicate failure for color
             );
             this.resetSubmitButton();
             return;
@@ -339,7 +321,8 @@ class AIProjectGallery {
         this.showNotification(
             this.currentLanguage === 'en' 
                 ? 'Project updated successfully!' 
-                : 'تم تحديث المشروع بنجاح!'
+                : 'تم تحديث المشروع بنجاح!',
+            true // Indicate success for color
         );
     }
 
@@ -348,21 +331,18 @@ class AIProjectGallery {
         const submitBtn = document.querySelector('#submissionForm .btn-primary');
         if (!submitBtn) return false;
         
-        // 1. Check for logged-in member 
         if (!this.currentMember) {
-            this.showNotification(this.currentLanguage === 'en' ? 'Please verify your membership first!' : 'يرجى التحقق من العضوية أولاً!');
+            this.showNotification(this.currentLanguage === 'en' ? 'Please verify your membership first!' : 'يرجى التحقق من العضوية أولاً!', false);
             this.resetSubmitButton();
             return false;
         }
 
-        // 2. Check for required fields
         if (!formData.name || !formData.creator || !formData.link || !formData.description) {
-            this.showNotification(this.currentLanguage === 'en' ? 'Please fill in all required fields!' : 'يرجى ملء جميع الحقول المطلوبة!');
+            this.showNotification(this.currentLanguage === 'en' ? 'Please fill in all required fields!' : 'يرجى ملء جميع الحقول المطلوبة!', false);
             this.resetSubmitButton();
             return false;
         }
 
-        // 3. Validation success: Set button to 'Processing' state
         submitBtn.disabled = true; 
         
         submitBtn.innerHTML = `
@@ -383,11 +363,13 @@ class AIProjectGallery {
         this.showNotification(
             this.currentLanguage === 'en' 
                 ? 'Project submitted successfully! 🎉' 
-                : 'تم تقديم المشروع بنجاح! 🎉'
+                : 'تم تقديم المشروع بنجاح! 🎉',
+            true // Indicate success for color
         );
     }
 
     deleteProject(projectId) {
+        // IMPORTANT: Replace confirm() with a custom modal if possible in a real app
         if (confirm(this.currentLanguage === 'en' 
             ? 'Are you sure you want to delete this project?' 
             : 'هل أنت متأكد من أنك تريد حذف هذا المشروع؟')) {
@@ -401,7 +383,8 @@ class AIProjectGallery {
             this.showNotification(
                 this.currentLanguage === 'en' 
                     ? 'Project deleted successfully! 🗑️' 
-                    : 'تم حذف المشروع بنجاح! 🗑️'
+                    : 'تم حذف المشروع بنجاح! 🗑️',
+                true // Indicate success for color
             );
         }
     }
@@ -410,19 +393,16 @@ class AIProjectGallery {
         const project = this.projects.find(p => p.id === projectId);
         if (!project) return;
         
-        // Fill form with project data
         document.getElementById('projectName').value = project.name;
         document.getElementById('creatorName').value = project.creator;
         document.getElementById('projectLink').value = project.link;
         document.getElementById('projectDescription').value = project.description;
         
-        // Use setAttribute for reliable state setting
         const submissionForm = document.getElementById('submissionForm');
         if (submissionForm) submissionForm.setAttribute('data-editing-project-id', projectId);
         
         this.resetSubmitButton(); 
         
-        // Scroll to form
         if (submissionForm) submissionForm.scrollIntoView({ behavior: 'smooth' });
     }
 
@@ -458,8 +438,6 @@ class AIProjectGallery {
         
         this.resetSubmitButton();
     }
-
-    // --- Rendering ---
 
     renderProjects() {
         const projectsGrid = document.getElementById('projectsGrid');
@@ -517,7 +495,6 @@ class AIProjectGallery {
             return;
         }
 
-        // This filtering is now reliable because both sides are forced to be lowercase
         const memberEmail = this.currentMember.email.toLowerCase();
         
         const memberProjects = this.projects.filter(project => 
@@ -572,22 +549,41 @@ class AIProjectGallery {
         `;
     }
 
-    // --- Utility Functions (No change) ---
-    
+    // 🛑 UPDATED: Function to update the Member Portal title
+    updateMemberPortalTitle() {
+        const memberPortalTitleEl = document.getElementById('memberPortalTitle'); // Targets the H2 element
+        if (memberPortalTitleEl) {
+            if (this.currentMember && this.currentMember.name) {
+                memberPortalTitleEl.textContent = this.currentLanguage === 'en' 
+                    ? `Welcome, ${this.currentMember.name}!` 
+                    : `مرحباً، ${this.currentMember.name}!`;
+            } else {
+                memberPortalTitleEl.textContent = this.currentLanguage === 'en' 
+                    ? 'Member Portal' 
+                    : 'بوابة الأعضاء';
+            }
+        }
+    }
+
     escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
 
-    showNotification(message) {
+    // 🛑 UPDATED: showNotification now accepts a success flag to change the color
+    showNotification(message, success = true) {
         const notification = document.createElement('div');
+        const bgColor = success 
+            ? 'linear-gradient(135deg, #2196F3, #03A9F4)' // Blue gradient for success/general
+            : 'linear-gradient(135deg, #f44336, #ff9800)'; // Red/Orange gradient for failure/error
+            
         notification.className = 'notification';
         notification.style.cssText = `
             position: fixed;
             top: 20px;
             ${this.currentLanguage === 'en' ? 'right: 20px;' : 'left: 20px;'}
-            background: linear-gradient(135deg, #4CAF50, #8BC34A); 
+            background: ${bgColor}; 
             color: white;
             padding: 1rem 1.5rem;
             border-radius: 5px;
@@ -595,6 +591,8 @@ class AIProjectGallery {
             z-index: 10000;
             font-weight: 500;
             animation: slideIn 0.3s ease-out;
+            max-width: 80%;
+            text-align: center;
         `;
         notification.textContent = message;
         
@@ -620,6 +618,11 @@ class AIProjectGallery {
 // Initialize the app when DOM is loaded
 let app;
 document.addEventListener('DOMContentLoaded', () => {
+    // Check if the Supabase client library is available
+    if (typeof supabase === 'undefined') {
+        console.error("Supabase library not loaded. Please ensure the script tag is included.");
+        return;
+    }
     app = new AIProjectGallery();
 });
 
