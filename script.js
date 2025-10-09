@@ -202,7 +202,8 @@ class AIProjectGallery {
             link: document.getElementById('projectLink').value.trim(),
             description: document.getElementById('projectDescription').value.trim(),
             submittedAt: new Date().toISOString(),
-            memberEmail: this.currentMember ? this.currentMember.email : '' // Ensure it's never undefined
+            // Ensure email is lowercased for consistent filtering
+            memberEmail: this.currentMember ? this.currentMember.email.toLowerCase() : '' 
         };
     }
 
@@ -219,7 +220,7 @@ class AIProjectGallery {
         const existingProject = this.projects.find(project => 
             project.name.toLowerCase() === formData.name.toLowerCase() && 
             project.creator.toLowerCase() === formData.creator.toLowerCase() &&
-            project.memberEmail === formData.memberEmail
+            project.memberEmail === formData.memberEmail // Uses the lowercased email from getFormData()
         );
         
         if (existingProject) {
@@ -364,10 +365,10 @@ class AIProjectGallery {
             const isEditing = form && form.getAttribute('data-editing-project-id');
             
             if (isEditing) {
-                 submitBtn.innerHTML = `
-                     <i class="fas fa-save"></i>
-                     <span>${this.currentLanguage === 'en' ? 'Update Project' : 'تحديث المشروع'}</span>
-                 `;
+                submitBtn.innerHTML = `
+                    <i class="fas fa-save"></i>
+                    <span>${this.currentLanguage === 'en' ? 'Update Project' : 'تحديث المشروع'}</span>
+                `;
             } else {
                 submitBtn.innerHTML = `
                     <i class="fas fa-paper-plane"></i>
@@ -390,7 +391,6 @@ class AIProjectGallery {
     }
 
     // --- Rendering ---
-    // (No changes needed here, the grid style is correctly set to 'grid' when projects exist)
 
     renderProjects() {
         const projectsGrid = document.getElementById('projectsGrid');
@@ -434,6 +434,10 @@ class AIProjectGallery {
         `;
     }
 
+    /**
+     * Renders projects specific to the current logged-in member.
+     * Implements robust filtering to address case sensitivity/data consistency issues.
+     */
     renderMyProjects() {
         const myProjectsGrid = document.getElementById('myProjectsGrid');
         const noProjectsMessage = document.getElementById('noMyProjectsMessage');
@@ -441,24 +445,29 @@ class AIProjectGallery {
         
         if (!myProjectsGrid || !noProjectsMessage || !totalProjectsEl) return; 
 
-        if (!this.currentMember) {
+        // 1. Handle no logged-in member case
+        if (!this.currentMember || !this.currentMember.email) {
             totalProjectsEl.textContent = '0';
             myProjectsGrid.style.display = 'none';
             noProjectsMessage.style.display = 'block';
             return;
         }
+
+        // 2. Filter projects using robust, case-insensitive logic
+        const memberEmail = this.currentMember.email.toLowerCase();
         
         const memberProjects = this.projects.filter(project => 
-            project.memberEmail === this.currentMember.email
+            // Check if project has an email AND it matches the current member's email (case-insensitive)
+            project.memberEmail && project.memberEmail.toLowerCase() === memberEmail
         );
         
         totalProjectsEl.textContent = memberProjects.length;
         
+        // 3. Render the grid or the message
         if (memberProjects.length === 0) {
             myProjectsGrid.style.display = 'none';
             noProjectsMessage.style.display = 'block';
         } else {
-            // CRITICAL CHECK: This is what ensures your projects are visible
             myProjectsGrid.style.display = 'grid'; 
             noProjectsMessage.style.display = 'none';
             
