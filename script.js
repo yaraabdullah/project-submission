@@ -17,8 +17,7 @@ class AIProjectGallery {
         this.applyTheme();
         this.applyLanguage();
         this.renderProjects(); // Render gallery projects
-        this.renderMyProjects(); // Ensure My Projects are rendered on init if logged in
-        this.checkCurrentPage();
+        this.checkCurrentPage(); // Determines starting page and renders My Projects if logged in
     }
 
     setupEventListeners() {
@@ -41,12 +40,13 @@ class AIProjectGallery {
         if (submissionForm) {
             submissionForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const editingProjectId = submissionForm.dataset.editingProjectId;
+                // Use getAttribute for reliable state check
+                const editingProjectId = submissionForm.getAttribute('data-editing-project-id'); 
 
                 if (editingProjectId) {
                     this.handleProjectUpdate(editingProjectId);
                 } else {
-                    this.handleProjectSubmission(e); // Handles new submission
+                    this.handleProjectSubmission(e); 
                 }
             });
         }
@@ -56,7 +56,6 @@ class AIProjectGallery {
             if (e.target.closest('.action-btn')) {
                 const button = e.target.closest('.action-btn');
                 const action = button.getAttribute('data-action');
-                // Use data-project-id to identify the item
                 const projectId = button.getAttribute('data-project-id'); 
                 
                 if (action === 'edit') {
@@ -114,7 +113,7 @@ class AIProjectGallery {
         }
     }
     
-    // --- Theme & Language Management (Omitted for brevity, assumed working) ---
+    // --- Theme & Language Management ---
 
     toggleTheme() {
         this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
@@ -168,7 +167,6 @@ class AIProjectGallery {
                 : 'مرحباً بك في بوابة الأعضاء!'
         );
         
-        // Ensure my projects are rendered when entering the portal
         this.renderMyProjects(); 
         this.navigateToPage('member-portal');
     }
@@ -198,7 +196,7 @@ class AIProjectGallery {
             return;
         }
 
-        // Check for duplicate projects (by name, creator, and member)
+        // Check for duplicate projects
         const existingProject = this.projects.find(project => 
             project.name.toLowerCase() === formData.name.toLowerCase() && 
             project.creator.toLowerCase() === formData.creator.toLowerCase() &&
@@ -233,7 +231,6 @@ class AIProjectGallery {
             return;
         }
         
-        // Update project data
         this.projects[projectIndex] = { 
             ...this.projects[projectIndex], 
             ...updatedData, 
@@ -254,7 +251,7 @@ class AIProjectGallery {
     }
 
     validateForm(formData) {
-        const submitBtn = document.querySelector('#submissionForm .btn-primary'); // Use a specific selector
+        const submitBtn = document.querySelector('#submissionForm .btn-primary');
         submitBtn.disabled = true;
 
         if (!this.currentMember) {
@@ -319,8 +316,8 @@ class AIProjectGallery {
         document.getElementById('projectLink').value = project.link;
         document.getElementById('projectDescription').value = project.description;
         
-        // Store project ID for update
-        document.getElementById('submissionForm').dataset.editingProjectId = projectId;
+        // Use setAttribute for reliable state setting
+        document.getElementById('submissionForm').setAttribute('data-editing-project-id', projectId);
         
         // Change submit button text
         const submitBtn = document.querySelector('#submissionForm .btn-primary');
@@ -339,8 +336,10 @@ class AIProjectGallery {
             submitBtn.disabled = false;
             const form = document.getElementById('submissionForm');
             
-            // Check if we were editing to determine the restored text
-            if (form && form.dataset.editingProjectId) {
+            // Check for the attribute to determine the button text
+            const isEditing = form && form.getAttribute('data-editing-project-id');
+            
+            if (isEditing) {
                  submitBtn.innerHTML = `
                     <i class="fas fa-save"></i>
                     <span>${this.currentLanguage === 'en' ? 'Update Project' : 'تحديث المشروع'}</span>
@@ -355,14 +354,15 @@ class AIProjectGallery {
     }
 
     resetForm() {
-        // 🛑 FIX: Ensure the form is correctly targeted and reset
         const form = document.getElementById('submissionForm');
         if (form) {
             form.reset();
-            // 🛑 CRUCIAL: Remove the editing ID after a successful operation
-            delete form.dataset.editingProjectId; 
+            
+            // CRITICAL FIX: Use removeAttribute for reliable state clearing
+            form.removeAttribute('data-editing-project-id'); 
         }
-        this.resetSubmitButton();
+        
+        this.resetSubmitButton(); 
     }
 
     // --- Rendering ---
@@ -371,7 +371,7 @@ class AIProjectGallery {
         const projectsGrid = document.getElementById('projectsGrid');
         const noProjectsMessage = document.getElementById('noProjectsMessage');
         
-        if (!projectsGrid || !noProjectsMessage) return; // Safety check
+        if (!projectsGrid || !noProjectsMessage) return; 
         
         if (this.projects.length === 0) {
             projectsGrid.style.display = 'none';
@@ -385,7 +385,6 @@ class AIProjectGallery {
     }
 
     createProjectCard(project) {
-        // ... (existing implementation)
         const submittedDate = new Date(project.submittedAt).toLocaleDateString(
             this.currentLanguage === 'en' ? 'en-US' : 'ar-SA'
         );
@@ -415,7 +414,7 @@ class AIProjectGallery {
         const noProjectsMessage = document.getElementById('noMyProjectsMessage');
         const totalProjectsEl = document.getElementById('totalProjects');
         
-        if (!myProjectsGrid || !noProjectsMessage || !totalProjectsEl) return; // Safety check
+        if (!myProjectsGrid || !noProjectsMessage || !totalProjectsEl) return; 
 
         if (!this.currentMember) {
             totalProjectsEl.textContent = '0';
@@ -424,7 +423,6 @@ class AIProjectGallery {
             return;
         }
         
-        // Filter projects for current member
         const memberProjects = this.projects.filter(project => 
             project.memberEmail === this.currentMember.email
         );
@@ -435,7 +433,6 @@ class AIProjectGallery {
             myProjectsGrid.style.display = 'none';
             noProjectsMessage.style.display = 'block';
         } else {
-            // Ensure the grid displays if projects exist
             myProjectsGrid.style.display = 'grid'; 
             noProjectsMessage.style.display = 'none';
             
@@ -448,7 +445,7 @@ class AIProjectGallery {
             this.currentLanguage === 'en' ? 'en-US' : 'ar-SA'
         );
         
-        // This is the HTML that includes the Edit/Remove buttons
+        // Includes Edit and Delete buttons with data-project-id
         return `
             <div class="my-project-card fade-in" data-project-id="${project.id}">
                 <div class="project-header">
@@ -479,7 +476,7 @@ class AIProjectGallery {
         `;
     }
 
-    // --- Utility Functions (Omitted for brevity) ---
+    // --- Utility Functions ---
     escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
@@ -489,12 +486,11 @@ class AIProjectGallery {
     showNotification(message) {
         const notification = document.createElement('div');
         notification.className = 'notification';
-        // Applying styles directly for simplicity
         notification.style.cssText = `
             position: fixed;
             top: 20px;
             ${this.currentLanguage === 'en' ? 'right: 20px;' : 'left: 20px;'}
-            background: linear-gradient(135deg, #4CAF50, #8BC34A); /* Green background for success */
+            background: linear-gradient(135deg, #4CAF50, #8BC34A); 
             color: white;
             padding: 1rem 1.5rem;
             border-radius: 5px;
@@ -530,7 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
     app = new AIProjectGallery();
 });
 
-// Add CSS animations (including new ones for RTL)
+// Add CSS animations
 const style = document.createElement('style');
 style.textContent = `
     /* Spinner for submission button */
@@ -550,19 +546,17 @@ style.textContent = `
         100% { transform: rotate(360deg); }
     }
     
-    /* Standard slide in */
+    /* Notification animations */
     @keyframes slideIn {
         from { transform: translateX(100%); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
     }
     
-    /* Notification slide out for LTR (Right to Left) */
     @keyframes slideOutRight {
         from { transform: translateX(0); opacity: 1; }
         to { transform: translateX(100%); opacity: 0; }
     }
 
-    /* Notification slide out for RTL (Left to Right) */
     @keyframes slideOutLeft {
         from { transform: translateX(0); opacity: 1; }
         to { transform: translateX(-100%); opacity: 0; }
