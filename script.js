@@ -9,8 +9,8 @@ class ProjectSubmissionApp {
         this.githubRepos = JSON.parse(localStorage.getItem('aiAssociationGitHubRepos')) || [];
         
         // GitHub OAuth configuration
-        this.githubClientId = 'YOUR_GITHUB_CLIENT_ID'; // Replace with your GitHub OAuth App Client ID
-        this.githubRedirectUri = 'https://yaraabdullah.github.io/project-submission/';
+        this.githubClientId = 'Ov23liBq2fXk8p8W4H8N'; // Your GitHub OAuth App Client ID
+        this.githubRedirectUri = window.location.origin + window.location.pathname;
         
         this.init();
     }
@@ -104,25 +104,90 @@ class ProjectSubmissionApp {
 
     async handleGitHubCallback(code) {
         try {
-            // In a real application, you would exchange the code for an access token on your backend
-            // For demo purposes, we'll simulate this process
             this.showNotification(
                 this.currentLanguage === 'en' 
-                    ? 'GitHub authentication successful!' 
-                    : 'تم تسجيل الدخول إلى GitHub بنجاح!'
+                    ? 'Processing GitHub authentication...' 
+                    : 'جاري معالجة تسجيل الدخول إلى GitHub...'
             );
             
-            // Simulate getting user data (in real app, this would come from your backend)
-            const mockUser = {
-                login: 'demo-user',
-                name: 'Demo User',
-                avatar_url: 'https://avatars.githubusercontent.com/u/1?v=4',
-                email: 'demo@example.com'
+            // Try to use backend proxy first, fallback to direct API
+            let authData;
+            
+            try {
+                // Use backend proxy for secure token exchange
+                const proxyResponse = await fetch('http://localhost:3001/api/github/auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code })
+                });
+                
+                if (proxyResponse.ok) {
+                    authData = await proxyResponse.json();
+                } else {
+                    throw new Error('Proxy server not available');
+                }
+            } catch (proxyError) {
+                console.log('Using direct GitHub API (less secure)');
+                
+                // Fallback to direct API (less secure, for demo purposes)
+                const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        client_id: this.githubClientId,
+                        client_secret: '', // Empty for demo
+                        code: code
+                    })
+                });
+                
+                if (!tokenResponse.ok) {
+                    throw new Error('Failed to exchange code for token');
+                }
+                
+                const tokenData = await tokenResponse.json();
+                
+                if (tokenData.error) {
+                    throw new Error(tokenData.error_description || 'Authentication failed');
+                }
+                
+                // Get user data from GitHub API
+                const userResponse = await fetch('https://api.github.com/user', {
+                    headers: {
+                        'Authorization': `token ${tokenData.access_token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (!userResponse.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                
+                const userData = await userResponse.json();
+                
+                authData = {
+                    accessToken: tokenData.access_token,
+                    user: userData
+                };
+            }
+            
+            this.githubUser = {
+                ...authData.user,
+                accessToken: authData.accessToken
             };
             
-            this.githubUser = mockUser;
             localStorage.setItem('aiAssociationGitHubUser', JSON.stringify(this.githubUser));
             this.updateGitHubUI();
+            
+            this.showNotification(
+                this.currentLanguage === 'en' 
+                    ? `Welcome, ${authData.user.name || authData.user.login}!` 
+                    : `مرحباً، ${authData.user.name || authData.user.login}!`
+            );
             
             // Clean up URL
             window.history.replaceState({}, document.title, window.location.pathname);
@@ -172,7 +237,7 @@ class ProjectSubmissionApp {
     }
 
     async fetchUserRepositories() {
-        if (!this.githubUser) return;
+        if (!this.githubUser || !this.githubUser.accessToken) return;
         
         const fetchRepoBtn = document.getElementById('fetchRepoBtn');
         const originalText = fetchRepoBtn.textContent;
@@ -181,49 +246,33 @@ class ProjectSubmissionApp {
             fetchRepoBtn.disabled = true;
             fetchRepoBtn.textContent = this.currentLanguage === 'en' ? 'Loading...' : 'جاري التحميل...';
             
-            // In a real application, you would fetch from your backend with the user's access token
-            // For demo purposes, we'll use mock data
-            const mockRepos = [
-                {
-                    id: 1,
-                    name: 'ai-image-recognition',
-                    full_name: `${this.githubUser.login}/ai-image-recognition`,
-                    description: 'An advanced machine learning model for image recognition',
-                    html_url: `https://github.com/${this.githubUser.login}/ai-image-recognition`,
-                    language: 'Python',
-                    stargazers_count: 42,
-                    updated_at: new Date().toISOString()
-                },
-                {
-                    id: 2,
-                    name: 'smart-chatbot',
-                    full_name: `${this.githubUser.login}/smart-chatbot`,
-                    description: 'A conversational AI assistant built with modern NLP techniques',
-                    html_url: `https://github.com/${this.githubUser.login}/smart-chatbot`,
-                    language: 'JavaScript',
-                    stargazers_count: 28,
-                    updated_at: new Date(Date.now() - 86400000).toISOString()
-                },
-                {
-                    id: 3,
-                    name: 'predictive-analytics',
-                    full_name: `${this.githubUser.login}/predictive-analytics`,
-                    description: 'Machine learning dashboard for business intelligence',
-                    html_url: `https://github.com/${this.githubUser.login}/predictive-analytics`,
-                    language: 'Python',
-                    stargazers_count: 15,
-                    updated_at: new Date(Date.now() - 172800000).toISOString()
+            // Fetch real repositories from GitHub API
+            const reposResponse = await fetch('https://api.github.com/user/repos?sort=updated&per_page=20', {
+                headers: {
+                    'Authorization': `token ${this.githubUser.accessToken}`,
+                    'Accept': 'application/vnd.github.v3+json'
                 }
-            ];
+            });
             
-            this.githubRepos = mockRepos;
+            if (!reposResponse.ok) {
+                throw new Error('Failed to fetch repositories');
+            }
+            
+            const repos = await reposResponse.json();
+            
+            // Filter out forked repositories and sort by stars
+            const filteredRepos = repos
+                .filter(repo => !repo.fork)
+                .sort((a, b) => b.stargazers_count - a.stargazers_count);
+            
+            this.githubRepos = filteredRepos;
             localStorage.setItem('aiAssociationGitHubRepos', JSON.stringify(this.githubRepos));
             
             this.populateRepositorySelector();
             this.showNotification(
                 this.currentLanguage === 'en' 
-                    ? `Found ${mockRepos.length} repositories!` 
-                    : `تم العثور على ${mockRepos.length} مستودع!`
+                    ? `Found ${filteredRepos.length} repositories!` 
+                    : `تم العثور على ${filteredRepos.length} مستودع!`
             );
             
         } catch (error) {
