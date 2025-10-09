@@ -456,6 +456,39 @@ p {
     background: #059669;
 }
 
+/* My Projects Section */
+.my-projects-section {
+    margin-top: 3rem;
+    padding: 2rem 0;
+}
+
+.my-projects-section h3 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.projects-controls {
+    margin-bottom: 1.5rem;
+}
+
+.projects-stats {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.stat-item {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.stat-item strong {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
 /* My Projects Grid */
 .my-projects-grid {
     display: grid;
