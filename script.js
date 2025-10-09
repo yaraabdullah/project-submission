@@ -2,7 +2,9 @@
 
 class ProjectSubmissionApp {
     constructor() {
+        console.log('Initializing ProjectSubmissionApp...');
         this.projects = JSON.parse(localStorage.getItem('aiAssociationProjects')) || [];
+        console.log('Loaded projects from localStorage:', this.projects);
         this.currentLanguage = localStorage.getItem('aiAssociationLanguage') || 'en';
         this.currentTheme = localStorage.getItem('aiAssociationTheme') || 'light';
         this.githubUser = JSON.parse(localStorage.getItem('aiAssociationGitHubUser')) || null;
@@ -399,8 +401,15 @@ class ProjectSubmissionApp {
     }
 
     addProject(projectData) {
+        console.log('Adding new project:', projectData);
         this.projects.unshift(projectData); // Add to beginning
+        console.log('Projects array after adding:', this.projects);
         localStorage.setItem('aiAssociationProjects', JSON.stringify(this.projects));
+        
+        // Verify localStorage
+        const saved = localStorage.getItem('aiAssociationProjects');
+        console.log('Saved to localStorage:', saved);
+        
         this.renderProjects();
         this.resetForm();
         this.showNotification(
@@ -418,9 +427,13 @@ class ProjectSubmissionApp {
     }
 
     navigateToPage(page) {
+        console.log('Navigating to page:', page);
         const submitPage = document.querySelector('.main:not(.my-projects-page)');
         const myProjectsPage = document.getElementById('myProjectsPage');
         const navLinks = document.querySelectorAll('.nav-link');
+
+        console.log('Submit page element:', submitPage);
+        console.log('My projects page element:', myProjectsPage);
 
         // Update active nav link
         navLinks.forEach(link => {
@@ -434,6 +447,7 @@ class ProjectSubmissionApp {
         if (page === 'my-projects') {
             submitPage.style.display = 'none';
             myProjectsPage.style.display = 'block';
+            console.log('About to render my projects. Current projects:', this.projects);
             this.renderMyProjects();
         } else {
             submitPage.style.display = 'block';
