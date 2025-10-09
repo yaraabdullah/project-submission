@@ -184,8 +184,12 @@ class AIProjectGallery {
     handleProjectSubmission(e) {
         e.preventDefault();
         
+        console.log('=== FORM SUBMISSION STARTED ===');
         console.log('Project submission form submitted');
         console.log('Current member:', this.currentMember);
+        
+        // Simple test - just show an alert first
+        alert('Form submitted! Check console for details.');
         
         // Prevent multiple submissions
         const submitBtn = document.querySelector('.btn-primary');
@@ -241,6 +245,7 @@ class AIProjectGallery {
         console.log('Submitting project:', formData);
         
         this.addProject(formData);
+        console.log('=== FORM SUBMISSION COMPLETED ===');
     }
 
     addProject(projectData) {
