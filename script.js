@@ -1,9 +1,19 @@
-// Professional AI Association Project Gallery - FIXED CODE
+// Professional AI Association Project Gallery - SUPABASE INTEGRATED
 class AIProjectGallery {
     constructor() {
         console.log('Initializing AI Project Gallery...');
 
-        // Initialize data from Local Storage
+        // 🛑 IMPORTANT: Replace these with your actual Supabase details
+        const SUPABASE_URL = 'https://rjsiyhwuxuiyqbmvabza.supabase.co'; // e.g., https://abcde12345.supabase.co
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqc2l5aHd1eHVpeXFibXZhYnphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk4MjQsImV4cCI6MjA3Mzk2NTgyNH0.GZ5Yt7PgrftNCEXJQBXb5GA_RAtfnpHElUnfyz7qinc';
+
+        // 1. Initialize Supabase Client
+        this.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Remove the static memberDatabase simulation
+        // this.memberDatabase = [...]; 
+
+        // Initialize data from Local Storage (rest remains the same)
         this.projects = JSON.parse(localStorage.getItem('aiAssociationProjects')) || [];
         this.currentLanguage = localStorage.getItem('aiAssociationLanguage') || 'en';
         this.currentTheme = localStorage.getItem('aiAssociationTheme') || 'light';
@@ -16,8 +26,8 @@ class AIProjectGallery {
         this.setupEventListeners();
         this.applyTheme();
         this.applyLanguage();
-        this.renderProjects(); // Render gallery projects
-        this.checkCurrentPage(); // Determines starting page and renders My Projects if logged in
+        this.renderProjects();
+        this.checkCurrentPage(); 
     }
 
     setupEventListeners() {
@@ -32,17 +42,15 @@ class AIProjectGallery {
             link.addEventListener('click', (e) => this.handleNavigation(e));
         });
         
-        // Membership form
+        // Membership form - NOW ASYNCHRONOUS
         document.getElementById('membershipForm').addEventListener('submit', (e) => this.handleMembershipVerification(e));
         
-        // Project submission form (Handles both new submission and update)
+        // Project submission form 
         const submissionForm = document.getElementById('submissionForm');
         if (submissionForm) {
             submissionForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                // FIX: Check validation before determining submission/update
                 if (!this.validateForm()) {
-                    // Validation failed, the button state is handled in validateForm
                     this.resetSubmitButton(); 
                     return;
                 }
@@ -73,7 +81,7 @@ class AIProjectGallery {
         });
     }
 
-    // --- Navigation ---
+    // --- Navigation (No change) ---
     
     handleNavigation(e) {
         e.preventDefault();
@@ -122,7 +130,7 @@ class AIProjectGallery {
         }
     }
     
-    // --- Theme & Language Management (No changes needed) ---
+    // --- Theme & Language Management (No change) ---
 
     toggleTheme() {
         this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
@@ -149,43 +157,86 @@ class AIProjectGallery {
         document.querySelectorAll('[data-en]').forEach(element => {
             const enText = element.getAttribute('data-en');
             const arText = element.getAttribute('data-ar');
-            // FIX: Use innerText/textContent for button spans, but still need to check if element exists
             if (enText && arText) {
                 element.textContent = this.currentLanguage === 'en' ? enText : arText;
             }
         });
     }
 
-    // --- Membership Verification ---
+    // --- Membership Verification - 🛑 CRITICAL UPDATE FOR SUPABASE 🛑 ---
 
-    handleMembershipVerification(e) {
+    async handleMembershipVerification(e) {
         e.preventDefault();
 
-        let email = document.getElementById('memberEmail').value.trim();
+        const email = document.getElementById('memberEmail').value.trim().toLowerCase();
         const phone = document.getElementById('memberPhone').value.trim();
-    
-        // 🛑 CRITICAL FIX (Already implemented, kept for certainty): Ensure email is always set.
-        if (!email) {
-            email = `guest_${Date.now()}@ai-association.com`;
-        }
         
-        const placeholderMember = {
-            email: email, 
-            phone: phone || '+1234567890',
-            name: email.split('@')[0]
-        };
+        const form = document.getElementById('membershipForm');
+        const verifyBtn = form ? form.querySelector('.btn-primary') : null;
 
-        this.currentMember = placeholderMember;
-        localStorage.setItem('aiAssociationMember', JSON.stringify(placeholderMember));
+        // Simple loading state
+        if (verifyBtn) {
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = this.currentLanguage === 'en' ? 'Verifying...' : 'جاري التحقق...';
+        }
+
+        // 1. Build the Supabase query using `.or()` for email/phone matching
+        // Assumes your table is named 'members' and has columns 'email', 'phone', 'payment_status', 'name'.
+        const query = this.supabase
+            .from('members')
+            .select('email, phone, full_name, payment_status')
+            // Match email OR phone
+            .or(`email.eq.${email},phone.eq.${phone}`)
+            // Filter by required payment status
+            .eq('payment_status', 'completed')
+            .limit(1);
+
+        const { data, error } = await query;
         
-        this.showNotification(
-            this.currentLanguage === 'en' 
-            ? 'Welcome to the member portal!' 
-            : 'مرحباً بك في بوابة الأعضاء!'
-        );
-        
-        this.renderMyProjects(); 
-        this.navigateToPage('member-portal');
+        // Reset button state regardless of outcome
+        if (verifyBtn) {
+            verifyBtn.disabled = false;
+            verifyBtn.innerHTML = this.currentLanguage === 'en' ? 'Verify Membership' : 'التحقق من العضوية';
+        }
+
+        if (error) {
+            console.error('Supabase Error:', error);
+            this.showNotification(
+                this.currentLanguage === 'en' ? 'Database connection error. Try again.' : 'خطأ في الاتصال بقاعدة البيانات. حاول مرة أخرى.'
+            );
+            return;
+        }
+
+        const verifiedMember = data.length > 0 ? data[0] : null;
+
+        if (verifiedMember) {
+            // 2. Set currentMember based on the database record
+            this.currentMember = {
+                email: verifiedMember.email.toLowerCase(), // Ensure consistency
+                name: verifiedMember.full_name,
+                phone: verifiedMember.phone
+            };
+            localStorage.setItem('aiAssociationMember', JSON.stringify(this.currentMember));
+            
+            this.showNotification(
+                this.currentLanguage === 'en' 
+                ? `Welcome back, ${verifiedMember.full_name}! You are verified.` 
+                : `مرحباً بعودتك، ${verifiedMember.full_name}! تم التحقق.`
+            );
+            
+            this.renderMyProjects(); 
+            this.navigateToPage('member-portal');
+        } else {
+            // 3. Handle non-member/non-paid case
+            this.currentMember = null;
+            localStorage.removeItem('aiAssociationMember');
+
+            this.showNotification(
+                this.currentLanguage === 'en' 
+                ? 'Verification failed. Membership details not found or payment incomplete.' 
+                : 'فشل التحقق. لم يتم العثور على التفاصيل أو الدفع غير مكتمل.'
+            );
+        }
     }
 
     clearMembershipForm() {
@@ -193,7 +244,7 @@ class AIProjectGallery {
         if (form) form.reset();
     }
 
-    // --- Project Submission and Update ---
+    // --- Project Submission and Update (No functional change needed) ---
 
     getFormData() {
         return {
@@ -210,7 +261,6 @@ class AIProjectGallery {
     handleProjectSubmission() {
         const formData = this.getFormData();
 
-        // Already validated in setupEventListeners, but good to check again
         if (!this.currentMember || !formData.name) { 
             this.resetSubmitButton();
             return;
@@ -220,7 +270,7 @@ class AIProjectGallery {
         const existingProject = this.projects.find(project => 
             project.name.toLowerCase() === formData.name.toLowerCase() && 
             project.creator.toLowerCase() === formData.creator.toLowerCase() &&
-            project.memberEmail === formData.memberEmail // Uses the lowercased email from getFormData()
+            project.memberEmail === formData.memberEmail 
         );
         
         if (existingProject) {
@@ -240,7 +290,6 @@ class AIProjectGallery {
     handleProjectUpdate(projectId) {
         const updatedData = this.getFormData();
         
-        // Already validated in setupEventListeners
         if (!updatedData.name) {
             this.resetSubmitButton();
             return;
@@ -262,7 +311,7 @@ class AIProjectGallery {
         
         this.renderProjects();
         this.renderMyProjects();
-        this.resetForm(); // Clears form and removes data-editing-project-id
+        this.resetForm(); 
         
         this.showNotification(
             this.currentLanguage === 'en' 
@@ -276,22 +325,22 @@ class AIProjectGallery {
         const submitBtn = document.querySelector('#submissionForm .btn-primary');
         if (!submitBtn) return false;
         
-        // 1. Check for logged-in member
+        // 1. Check for logged-in member (now ensured by Supabase verification)
         if (!this.currentMember) {
             this.showNotification(this.currentLanguage === 'en' ? 'Please verify your membership first!' : 'يرجى التحقق من العضوية أولاً!');
-            this.resetSubmitButton(); // Ensure it's not disabled forever
+            this.resetSubmitButton();
             return false;
         }
 
         // 2. Check for required fields
         if (!formData.name || !formData.creator || !formData.link || !formData.description) {
             this.showNotification(this.currentLanguage === 'en' ? 'Please fill in all required fields!' : 'يرجى ملء جميع الحقول المطلوبة!');
-            this.resetSubmitButton(); // Ensure it's not disabled forever
+            this.resetSubmitButton();
             return false;
         }
 
         // 3. Validation success: Set button to 'Processing' state
-        submitBtn.disabled = true; // Disable to prevent double submission
+        submitBtn.disabled = true; 
         
         submitBtn.innerHTML = `
             <div class="spinner"></div>
@@ -306,7 +355,7 @@ class AIProjectGallery {
         
         this.renderProjects();
         this.renderMyProjects();
-        this.resetForm(); // Clears form, removes attribute, and resets button text
+        this.resetForm(); 
         
         this.showNotification(
             this.currentLanguage === 'en' 
@@ -348,8 +397,7 @@ class AIProjectGallery {
         const submissionForm = document.getElementById('submissionForm');
         if (submissionForm) submissionForm.setAttribute('data-editing-project-id', projectId);
         
-        // Change submit button text
-        this.resetSubmitButton(); // Call reset to ensure button is in 'Update' mode and enabled
+        this.resetSubmitButton(); 
         
         // Scroll to form
         if (submissionForm) submissionForm.scrollIntoView({ behavior: 'smooth' });
@@ -361,7 +409,6 @@ class AIProjectGallery {
             submitBtn.disabled = false;
             const form = document.getElementById('submissionForm');
             
-            // Check for the attribute to determine the correct button text (Submit or Update)
             const isEditing = form && form.getAttribute('data-editing-project-id');
             
             if (isEditing) {
@@ -383,14 +430,13 @@ class AIProjectGallery {
         if (form) {
             form.reset();
             
-            // CRITICAL FIX: Use removeAttribute for reliable state clearing
             form.removeAttribute('data-editing-project-id'); 
         }
         
-        this.resetSubmitButton(); // Resets button back to 'Submit Project' and re-enables it
+        this.resetSubmitButton();
     }
 
-    // --- Rendering ---
+    // --- Rendering (No change in logic, filtering is now reliable) ---
 
     renderProjects() {
         const projectsGrid = document.getElementById('projectsGrid');
@@ -434,10 +480,6 @@ class AIProjectGallery {
         `;
     }
 
-    /**
-     * Renders projects specific to the current logged-in member.
-     * Implements robust filtering to address case sensitivity/data consistency issues.
-     */
     renderMyProjects() {
         const myProjectsGrid = document.getElementById('myProjectsGrid');
         const noProjectsMessage = document.getElementById('noMyProjectsMessage');
@@ -445,7 +487,6 @@ class AIProjectGallery {
         
         if (!myProjectsGrid || !noProjectsMessage || !totalProjectsEl) return; 
 
-        // 1. Handle no logged-in member case
         if (!this.currentMember || !this.currentMember.email) {
             totalProjectsEl.textContent = '0';
             myProjectsGrid.style.display = 'none';
@@ -453,17 +494,14 @@ class AIProjectGallery {
             return;
         }
 
-        // 2. Filter projects using robust, case-insensitive logic
         const memberEmail = this.currentMember.email.toLowerCase();
         
         const memberProjects = this.projects.filter(project => 
-            // Check if project has an email AND it matches the current member's email (case-insensitive)
             project.memberEmail && project.memberEmail.toLowerCase() === memberEmail
         );
         
         totalProjectsEl.textContent = memberProjects.length;
         
-        // 3. Render the grid or the message
         if (memberProjects.length === 0) {
             myProjectsGrid.style.display = 'none';
             noProjectsMessage.style.display = 'block';
@@ -480,7 +518,6 @@ class AIProjectGallery {
             this.currentLanguage === 'en' ? 'en-US' : 'ar-SA'
         );
         
-        // Includes Edit and Delete buttons with data-project-id
         return `
             <div class="my-project-card fade-in" data-project-id="${project.id}">
                 <div class="project-header">
@@ -511,8 +548,7 @@ class AIProjectGallery {
         `;
     }
 
-    // --- Utility Functions ---
-    // (Notification and initial page logic remain the same)
+    // --- Utility Functions (No change) ---
     
     escapeHtml(text) {
         const div = document.createElement('div');
