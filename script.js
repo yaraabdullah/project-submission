@@ -50,6 +50,18 @@ class ProjectSubmissionApp {
         // Form submission
         const form = document.getElementById('submissionForm');
         form.addEventListener('submit', (e) => this.handleFormSubmission(e));
+
+        // Navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => this.handleNavigation(e));
+        });
+
+        // Add project button
+        const addProjectBtn = document.getElementById('addProjectBtn');
+        if (addProjectBtn) {
+            addProjectBtn.addEventListener('click', () => this.navigateToPage('submit'));
+        }
     }
 
     toggleTheme() {
@@ -340,14 +352,18 @@ class ProjectSubmissionApp {
         e.preventDefault();
         
         const formData = new FormData(e.target);
+        const editingProjectId = e.target.dataset.editingProjectId;
+        
         const projectData = {
-            id: Date.now().toString(),
+            id: editingProjectId || Date.now().toString(),
             name: formData.get('projectName'),
             creator: formData.get('creatorName'),
             link: formData.get('projectLink'),
             description: formData.get('projectDescription'),
             image: null,
-            submittedAt: new Date().toISOString()
+            submittedAt: editingProjectId ? 
+                this.projects.find(p => p.id === editingProjectId)?.submittedAt || new Date().toISOString() :
+                new Date().toISOString()
         };
 
         // Handle image upload
@@ -356,11 +372,34 @@ class ProjectSubmissionApp {
             const reader = new FileReader();
             reader.onload = (e) => {
                 projectData.image = e.target.result;
-                this.addProject(projectData);
+                this.processProjectSubmission(projectData, editingProjectId);
             };
             reader.readAsDataURL(imageFile);
         } else {
+            this.processProjectSubmission(projectData, editingProjectId);
+        }
+    }
+
+    processProjectSubmission(projectData, editingProjectId) {
+        if (editingProjectId) {
+            this.updateProject(projectData);
+        } else {
             this.addProject(projectData);
+        }
+    }
+
+    updateProject(projectData) {
+        const projectIndex = this.projects.findIndex(p => p.id === projectData.id);
+        if (projectIndex !== -1) {
+            this.projects[projectIndex] = projectData;
+            localStorage.setItem('aiAssociationProjects', JSON.stringify(this.projects));
+            this.renderProjects();
+            this.resetForm();
+            this.showNotification(
+                this.currentLanguage === 'en' 
+                    ? 'Project updated successfully!' 
+                    : 'تم تحديث المشروع بنجاح!'
+            );
         }
     }
 
@@ -376,8 +415,165 @@ class ProjectSubmissionApp {
         );
     }
 
+    // Navigation Methods
+    handleNavigation(e) {
+        e.preventDefault();
+        const page = e.target.getAttribute('data-page');
+        this.navigateToPage(page);
+    }
+
+    navigateToPage(page) {
+        const submitPage = document.querySelector('.main:not(.my-projects-page)');
+        const myProjectsPage = document.getElementById('myProjectsPage');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        // Update active nav link
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('data-page') === page) {
+                link.classList.add('active');
+            }
+        });
+
+        // Show/hide pages
+        if (page === 'my-projects') {
+            submitPage.style.display = 'none';
+            myProjectsPage.style.display = 'block';
+            this.renderMyProjects();
+        } else {
+            submitPage.style.display = 'block';
+            myProjectsPage.style.display = 'none';
+        }
+    }
+
+    // My Projects Methods
+    renderMyProjects() {
+        const myProjectsGrid = document.getElementById('myProjectsGrid');
+        const noProjectsMessage = document.getElementById('noProjectsMessage');
+        const totalProjectsEl = document.getElementById('totalProjects');
+        const githubProjectsEl = document.getElementById('githubProjects');
+
+        // Calculate stats
+        const totalProjects = this.projects.length;
+        const githubProjects = this.projects.filter(project => 
+            project.link && project.link.includes('github.com')
+        ).length;
+
+        totalProjectsEl.textContent = totalProjects;
+        githubProjectsEl.textContent = githubProjects;
+
+        // Clear grid
+        myProjectsGrid.innerHTML = '';
+
+        if (totalProjects === 0) {
+            noProjectsMessage.style.display = 'block';
+            myProjectsGrid.style.display = 'none';
+        } else {
+            noProjectsMessage.style.display = 'none';
+            myProjectsGrid.style.display = 'grid';
+
+            this.projects.forEach(project => {
+                const projectCard = this.createMyProjectCard(project);
+                myProjectsGrid.appendChild(projectCard);
+            });
+        }
+    }
+
+    createMyProjectCard(project) {
+        const card = document.createElement('div');
+        card.className = 'my-project-card';
+        
+        const isGitHubProject = project.link && project.link.includes('github.com');
+        const githubBadge = isGitHubProject ? '<span class="github-badge-small">🐙 GitHub</span>' : '';
+        
+        const submittedDate = new Date(project.submittedAt).toLocaleDateString(
+            this.currentLanguage === 'en' ? 'en-US' : 'ar-SA'
+        );
+
+        card.innerHTML = `
+            <div class="project-header">
+                <h3 class="project-title">${this.escapeHtml(project.name)}</h3>
+                <div class="project-actions">
+                    <button class="action-btn edit-btn" onclick="app.editProject('${project.id}')" title="${this.currentLanguage === 'en' ? 'Edit Project' : 'تحرير المشروع'}">
+                        ✏️
+                    </button>
+                    <button class="action-btn delete-btn" onclick="app.deleteProject('${project.id}')" title="${this.currentLanguage === 'en' ? 'Delete Project' : 'حذف المشروع'}">
+                        🗑️
+                    </button>
+                </div>
+            </div>
+            <div class="project-info">
+                <p class="project-creator">${this.currentLanguage === 'en' ? 'By' : 'بواسطة'} ${this.escapeHtml(project.creator)}</p>
+                <p class="project-description">${this.escapeHtml(project.description)}</p>
+            </div>
+            <div class="project-meta">
+                <div class="project-date">
+                    📅 ${submittedDate}
+                </div>
+                ${githubBadge}
+            </div>
+        `;
+
+        return card;
+    }
+
+    editProject(projectId) {
+        const project = this.projects.find(p => p.id === projectId);
+        if (!project) return;
+
+        // Navigate to submit page and populate form
+        this.navigateToPage('submit');
+        
+        // Fill form with project data
+        document.getElementById('projectName').value = project.name;
+        document.getElementById('creatorName').value = project.creator;
+        document.getElementById('projectLink').value = project.link;
+        document.getElementById('projectDescription').value = project.description;
+        
+        // Store project ID for update
+        document.getElementById('submissionForm').dataset.editingProjectId = projectId;
+        
+        // Change submit button text
+        const submitBtn = document.querySelector('.submit-btn');
+        submitBtn.textContent = this.currentLanguage === 'en' ? 'Update Project' : 'تحديث المشروع';
+        
+        this.showNotification(
+            this.currentLanguage === 'en' 
+                ? 'Project loaded for editing' 
+                : 'تم تحميل المشروع للتحرير'
+        );
+    }
+
+    deleteProject(projectId) {
+        const project = this.projects.find(p => p.id === projectId);
+        if (!project) return;
+
+        const confirmMessage = this.currentLanguage === 'en' 
+            ? `Are you sure you want to delete "${project.name}"?` 
+            : `هل أنت متأكد من حذف "${project.name}"؟`;
+            
+        if (confirm(confirmMessage)) {
+            this.projects = this.projects.filter(p => p.id !== projectId);
+            localStorage.setItem('aiAssociationProjects', JSON.stringify(this.projects));
+            this.renderMyProjects();
+            this.renderProjects();
+            
+            this.showNotification(
+                this.currentLanguage === 'en' 
+                    ? 'Project deleted successfully' 
+                    : 'تم حذف المشروع بنجاح'
+            );
+        }
+    }
+
     resetForm() {
-        document.getElementById('submissionForm').reset();
+        const form = document.getElementById('submissionForm');
+        form.reset();
+        delete form.dataset.editingProjectId;
+        
+        // Reset submit button text
+        const submitBtn = document.querySelector('.submit-btn');
+        submitBtn.textContent = this.currentLanguage === 'en' ? 'Submit Project' : 'تقديم المشروع';
     }
 
     showNotification(message) {
