@@ -66,6 +66,9 @@ class AIProjectGallery {
         if (submissionForm) {
             submissionForm.addEventListener('submit', (e) => {
                 e.preventDefault();
+                console.log('=== FORM SUBMITTED ===');
+                console.log('Current member:', this.currentMember);
+                
                 if (!this.validateForm()) {
                     this.resetSubmitButton(); 
                     return;
@@ -74,8 +77,10 @@ class AIProjectGallery {
                 const editingProjectId = submissionForm.getAttribute('data-editing-project-id'); 
 
                 if (editingProjectId) {
+                    console.log('Updating project:', editingProjectId);
                     this.handleProjectUpdate(editingProjectId);
                 } else {
+                    console.log('Submitting new project');
                     this.handleProjectSubmission(); 
                 }
             });
@@ -264,9 +269,12 @@ class AIProjectGallery {
     }
 
     handleProjectSubmission() {
+        console.log('=== HANDLE PROJECT SUBMISSION ===');
         const formData = this.getFormData();
+        console.log('Form data:', formData);
 
         if (!this.currentMember || !formData.name) { 
+            console.log('Validation failed - no member or no name');
             this.resetSubmitButton();
             return;
         }
@@ -278,6 +286,7 @@ class AIProjectGallery {
         );
         
         if (existingProject) {
+            console.log('Duplicate project found');
             this.showNotification(
                 this.currentLanguage === 'en' 
                     ? 'You have already submitted a project with this name!' 
@@ -289,6 +298,7 @@ class AIProjectGallery {
         }
 
         formData.id = Date.now().toString();
+        console.log('Calling addProject with:', formData);
         this.addProject(formData);
     }
 
