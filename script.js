@@ -5,6 +5,16 @@ class ProjectSubmissionApp {
         console.log('Initializing ProjectSubmissionApp...');
         this.projects = JSON.parse(localStorage.getItem('aiAssociationProjects')) || [];
         console.log('Loaded projects from localStorage:', this.projects);
+        
+        // Clear any sample projects that might have been added
+        this.projects = this.projects.filter(project => 
+            !['1', '2'].includes(project.id) // Remove sample projects
+        );
+        
+        // Save the cleaned projects back to localStorage
+        localStorage.setItem('aiAssociationProjects', JSON.stringify(this.projects));
+        console.log('Projects after removing samples:', this.projects);
+        
         this.currentLanguage = localStorage.getItem('aiAssociationLanguage') || 'en';
         this.currentTheme = localStorage.getItem('aiAssociationTheme') || 'light';
         this.githubUser = JSON.parse(localStorage.getItem('aiAssociationGitHubUser')) || null;
@@ -23,7 +33,6 @@ class ProjectSubmissionApp {
         this.applyLanguage();
         this.checkGitHubAuth();
         this.renderProjects();
-        this.addSampleProjects();
     }
 
     setupEventListeners() {
@@ -465,6 +474,7 @@ class ProjectSubmissionApp {
             submitPage.style.display = 'none';
             myProjectsPage.style.display = 'block';
             console.log('About to render my projects. Current projects:', this.projects);
+            console.log('My projects grid element:', document.getElementById('myProjectsGrid'));
             this.renderMyProjects();
         } else {
             submitPage.style.display = 'block';
