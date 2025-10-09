@@ -353,12 +353,20 @@ class AIProjectGallery {
     }
 
     addProject(projectData) {
+        console.log('=== ADDING PROJECT ===');
+        console.log('Project data:', projectData);
+        console.log('Current member:', this.currentMember);
+        
         this.projects.unshift(projectData);
         localStorage.setItem('aiAssociationProjects', JSON.stringify(this.projects));
+        
+        console.log('Projects array after adding:', this.projects);
         
         this.renderProjects();
         this.renderMyProjects();
         this.resetForm(); 
+        
+        console.log('=== PROJECT ADDED SUCCESSFULLY ===');
         
         this.showNotification(
             this.currentLanguage === 'en' 
@@ -482,13 +490,21 @@ class AIProjectGallery {
     }
 
     renderMyProjects() {
+        console.log('=== RENDERING MY PROJECTS ===');
+        console.log('Current member:', this.currentMember);
+        console.log('All projects:', this.projects);
+        
         const myProjectsGrid = document.getElementById('myProjectsGrid');
         const noProjectsMessage = document.getElementById('noMyProjectsMessage');
         const totalProjectsEl = document.getElementById('totalProjects');
         
-        if (!myProjectsGrid || !noProjectsMessage || !totalProjectsEl) return; 
+        if (!myProjectsGrid || !noProjectsMessage || !totalProjectsEl) {
+            console.error('My projects elements not found!');
+            return; 
+        }
 
         if (!this.currentMember || !this.currentMember.email) {
+            console.log('No current member, showing empty state');
             totalProjectsEl.textContent = '0';
             myProjectsGrid.style.display = 'none';
             noProjectsMessage.style.display = 'block';
@@ -496,10 +512,13 @@ class AIProjectGallery {
         }
 
         const memberEmail = this.currentMember.email.toLowerCase();
+        console.log('Filtering by member email:', memberEmail);
         
         const memberProjects = this.projects.filter(project => 
             project.memberEmail && project.memberEmail.toLowerCase() === memberEmail
         );
+        
+        console.log('Member projects found:', memberProjects);
         
         totalProjectsEl.textContent = memberProjects.length;
         
@@ -511,6 +530,7 @@ class AIProjectGallery {
             noProjectsMessage.style.display = 'none';
             
             myProjectsGrid.innerHTML = memberProjects.map(project => this.createMyProjectCard(project)).join('');
+            console.log('My projects grid updated with', memberProjects.length, 'projects');
         }
     }
 
