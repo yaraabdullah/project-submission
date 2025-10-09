@@ -9,14 +9,7 @@ class AIProjectGallery {
         this.currentTheme = localStorage.getItem('aiAssociationTheme') || 'light';
         this.currentMember = JSON.parse(localStorage.getItem('aiAssociationMember')) || null;
         
-        // Simulated membership database
-        this.memberDatabase = [
-            { email: 'admin@ai-association.com', phone: '+1234567890', name: 'Admin User' },
-            { email: 'john.doe@example.com', phone: '+1987654321', name: 'John Doe' },
-            { email: 'sarah.ahmed@example.com', phone: '+1555123456', name: 'Sarah Ahmed' },
-            { email: 'mohammed.al@example.com', phone: '+1555987654', name: 'Mohammed Al-Rashid' },
-            { email: 'test@test.com', phone: '+1111111111', name: 'Test User' }
-        ];
+        // Membership database removed - using placeholder verification
         
         this.init();
     }
@@ -135,46 +128,39 @@ class AIProjectGallery {
         });
     }
 
-    // Membership Verification
+    // Membership Verification (Placeholder - Not Functional)
     handleMembershipVerification(e) {
         e.preventDefault();
         
         const email = document.getElementById('memberEmail').value.trim();
         const phone = document.getElementById('memberPhone').value.trim();
         
-        console.log('Verifying membership for:', email, phone);
+        console.log('Membership verification (placeholder) for:', email, phone);
         
-        // Check if member exists in database
-        const member = this.memberDatabase.find(m => 
-            m.email.toLowerCase() === email.toLowerCase() || 
-            m.phone === phone
+        // For now, just create a placeholder member and proceed
+        // In the future, this would connect to a real database
+        const placeholderMember = {
+            email: email || 'placeholder@ai-association.com',
+            phone: phone || '+1234567890',
+            name: email ? email.split('@')[0] : 'Member'
+        };
+        
+        this.currentMember = placeholderMember;
+        localStorage.setItem('aiAssociationMember', JSON.stringify(placeholderMember));
+        
+        this.showNotification(
+            this.currentLanguage === 'en' 
+                ? 'Welcome to the member portal!' 
+                : 'مرحباً بك في بوابة الأعضاء!'
         );
         
-        if (member) {
-            this.currentMember = member;
-            localStorage.setItem('aiAssociationMember', JSON.stringify(member));
-            this.showNotification(
-                this.currentLanguage === 'en' 
-                    ? `Welcome back, ${member.name}!` 
-                    : `مرحباً بعودتك، ${member.name}!`
-            );
-            this.navigateToPage('member-portal');
-        } else {
-            this.showMembershipError();
-        }
+        this.navigateToPage('member-portal');
     }
 
-    showMembershipError() {
-        const errorElement = document.getElementById('membershipError');
-        errorElement.style.display = 'block';
-        setTimeout(() => {
-            errorElement.style.display = 'none';
-        }, 5000);
-    }
+    // Membership error handling removed since verification is placeholder
 
     clearMembershipForm() {
         document.getElementById('membershipForm').reset();
-        document.getElementById('membershipError').style.display = 'none';
     }
 
     // Project Management
