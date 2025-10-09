@@ -4,161 +4,165 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Association - Project Gallery</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Association - Project Gallery</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <img src="white logo.png" alt="AI Association Logo" class="logo-image">
-                    </div>
-                </div>
-                
-                <nav class="header-nav">
-                    <a href="#" class="nav-link active" data-page="gallery">Projects Gallery</a>
-                </nav>
-                
-                <div class="header-controls">
-                    <button class="control-btn" id="themeToggle" title="Toggle Theme">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    <button class="control-btn" id="languageToggle" title="Toggle Language">
-                        <i class="fas fa-language"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <img src="white logo.png" alt="AI Association Logo" class="logo-image">
+                    </div>
+                </div>
+                
+                <nav class="header-nav">
+                    <a href="#" class="nav-link active" data-page="gallery">Projects Gallery</a>
+                    <!-- Added links for proper navigation -->
+                    <a href="#" class="nav-link" data-page="membership" data-en="Member Area" data-ar="منطقة الأعضاء">Member Area</a>
+                    <a href="#" class="nav-link" data-page="member-portal" data-en="Portal" data-ar="البوابة">Portal</a>
+                </nav>
+                
+                <div class="header-controls">
+                    <button class="control-btn" id="themeToggle" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="control-btn" id="languageToggle" title="Toggle Language">
+                        <i class="fas fa-language"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <!-- Main Content -->
-    <main class="main">
-        <!-- Projects Gallery Page -->
-        <div class="container" id="galleryPage">
-            <section class="hero">
-                <h1 class="hero-title" data-en="AI Projects Gallery" data-ar="معرض مشاريع الذكاء الاصطناعي">AI Projects Gallery</h1>
-                <p class="hero-subtitle" data-en="Discover innovative AI projects created by our talented members" data-ar="اكتشف مشاريع الذكاء الاصطناعي المبتكرة التي أنشأها أعضاؤنا الموهوبون">Discover innovative AI projects created by our talented members</p>
-            </section>
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Projects Gallery Page -->
+        <div class="container" id="galleryPage">
+            <section class="hero">
+                <h1 class="hero-title" data-en="AI Projects Gallery" data-ar="معرض مشاريع الذكاء الاصطناعي">AI Projects Gallery</h1>
+                <p class="hero-subtitle" data-en="Discover innovative AI projects created by our talented members" data-ar="اكتشف مشاريع الذكاء الاصطناعي المبتكرة التي أنشأها أعضاؤنا الموهوبون">Discover innovative AI projects created by our talented members</p>
+            </section>
 
-            <!-- Add Project Section -->
-            <section class="add-project-section">
-                <a href="#" class="add-project-link" data-page="membership">
-                    <i class="fas fa-plus"></i>
-                    <span data-en="Add Your Project" data-ar="أضف مشروعك">Add Your Project</span>
-                </a>
-            </section>
+            <!-- Add Project Section -->
+            <section class="add-project-section">
+                <a href="#" class="add-project-link" data-page="membership">
+                    <i class="fas fa-plus"></i>
+                    <span data-en="Add Your Project" data-ar="أضف مشروعك">Add Your Project</span>
+                </a>
+            </section>
 
-            <!-- Projects Grid -->
-            <div class="projects-grid" id="projectsGrid">
-                <!-- Projects will be displayed here -->
-            </div>
+            <!-- Projects Grid -->
+            <div class="projects-grid" id="projectsGrid">
+                <!-- Projects will be displayed here -->
+            </div>
 
-            <!-- No Projects Message -->
-            <div class="no-projects-message" id="noProjectsMessage" style="display: none;">
-                <div class="no-projects-icon">🚀</div>
-                <h3 data-en="No Projects Yet" data-ar="لا توجد مشاريع بعد">No Projects Yet</h3>
-                <p data-en="Be the first to showcase your AI project!" data-ar="كن أول من يعرض مشروع الذكاء الاصطناعي الخاص به!">Be the first to showcase your AI project!</p>
-            </div>
-        </div>
+            <!-- No Projects Message -->
+            <div class="no-projects-message" id="noProjectsMessage" style="display: none;">
+                <div class="no-projects-icon">🚀</div>
+                <h3 data-en="No Projects Yet" data-ar="لا توجد مشاريع بعد">No Projects Yet</h3>
+                <p data-en="Be the first to showcase your AI project!" data-ar="كن أول من يعرض مشروع الذكاء الاصطناعي الخاص به!">Be the first to showcase your AI project!</p>
+            </div>
+        </div>
 
-        <!-- Membership Verification Page -->
-        <div class="container" id="membershipPage" style="display: none;">
-            <div class="membership-page">
-                <div class="membership-card">
-                    <h2 class="membership-title" data-en="Member Verification" data-ar="التحقق من العضوية">Member Verification</h2>
-                    <p class="membership-subtitle" data-en="Enter any email or phone number to access the member portal (placeholder verification)" data-ar="أدخل أي بريد إلكتروني أو رقم هاتف للوصول إلى بوابة الأعضاء (تحقق مؤقت)">Enter any email or phone number to access the member portal (placeholder verification)</p>
-                    
-                    <form id="membershipForm">
-                        <div class="form-group">
-                            <label for="memberEmail" class="form-label" data-en="Email Address" data-ar="البريد الإلكتروني">Email Address</label>
-                            <input type="email" id="memberEmail" class="form-input" placeholder="your.email@example.com">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="memberPhone" class="form-label" data-en="Phone Number (Optional)" data-ar="رقم الهاتف (اختياري)">Phone Number (Optional)</label>
-                            <input type="tel" id="memberPhone" class="form-input" placeholder="+966 555555555">
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span data-en="Verify Membership" data-ar="التحقق من العضوية">Verify Membership</span>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <!-- Membership Verification Page -->
+        <div class="container" id="membershipPage" style="display: none;">
+            <div class="membership-page">
+                <div class="membership-card">
+                    <h2 class="membership-title" data-en="Member Verification" data-ar="التحقق من العضوية">Member Verification</h2>
+                    <p class="membership-subtitle" data-en="Enter any email or phone number to access the member portal (placeholder verification)" data-ar="أدخل أي بريد إلكتروني أو رقم هاتف للوصول إلى بوابة الأعضاء (تحقق مؤقت)">Enter any email or phone number to access the member portal (placeholder verification)</p>
+                    
+                    <form id="membershipForm">
+                        <div class="form-group">
+                            <label for="memberEmail" class="form-label" data-en="Email Address" data-ar="البريد الإلكتروني">Email Address</label>
+                            <input type="email" id="memberEmail" class="form-input" placeholder="your.email@example.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="memberPhone" class="form-label" data-en="Phone Number (Optional)" data-ar="رقم الهاتف (اختياري)">Phone Number (Optional)</label>
+                            <input type="tel" id="memberPhone" class="form-input" placeholder="+966 555555555">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span data-en="Verify Membership" data-ar="التحقق من العضوية">Verify Membership</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-        <!-- Member Portal Page -->
-        <div class="container" id="memberPortalPage" style="display: none;">
-            <div class="member-portal">
-                <div class="portal-header">
-                    <h1 class="portal-title" data-en="Member Portal" data-ar="بوابة الأعضاء">Member Portal</h1>
-                    <p class="portal-subtitle" data-en="Welcome back! Manage your projects and submit new ones." data-ar="مرحباً بعودتك! أدر مشاريعك وقدم مشاريع جديدة.">Welcome back! Manage your projects and submit new ones.</p>
-                </div>
+        <!-- Member Portal Page -->
+        <div class="container" id="memberPortalPage" style="display: none;">
+            <div class="member-portal">
+                <div class="portal-header">
+                    <h2 id="memberPortalTitle" data-en="Member Portal" data-ar="بوابة الأعضاء">Member Portal</h2>
+                    <!-- CRITICAL UPDATE: Added id="memberPortalSubtitle" -->
+                    <p id="memberPortalSubtitle" class="portal-subtitle" data-en="Welcome back! Manage your projects and submit new ones." data-ar="مرحباً بعودتك! أدر مشاريعك وقدم مشاريع جديدة.">Welcome back! Manage your projects and submit new ones.</p>
+                </div>
 
-                <!-- Project Submission Form -->
-                <section class="submission-section">
-                    <div class="membership-card">
-                        <h3 data-en="Submit New Project" data-ar="تقديم مشروع جديد">Submit New Project</h3>
-                        
-                        <form id="submissionForm">
-                            <div class="form-group">
-                                <label for="projectName" class="form-label" data-en="Project Name" data-ar="اسم المشروع">Project Name</label>
-                                <input type="text" id="projectName" class="form-input" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="creatorName" class="form-label" data-en="Your Name" data-ar="اسمك">Your Name</label>
-                                <input type="text" id="creatorName" class="form-input" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="projectLink" class="form-label" data-en="Project Link (GitHub, Demo, etc.)" data-ar="رابط المشروع (GitHub، عرض تجريبي، إلخ)">Project Link (GitHub, Demo, etc.)</label>
-                                <input type="url" id="projectLink" class="form-input" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="projectDescription" class="form-label" data-en="Project Description" data-ar="وصف المشروع">Project Description</label>
-                                <textarea id="projectDescription" class="form-input form-textarea" required></textarea>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary" style="width: 100%;">
-                                <i class="fas fa-paper-plane"></i>
-                                <span data-en="Submit Project" data-ar="تقديم المشروع">Submit Project</span>
-                            </button>
-                        </form>
-                    </div>
-                </section>
+                <!-- Project Submission Form -->
+                <section class="submission-section">
+                    <div class="membership-card">
+                        <h3 data-en="Submit New Project" data-ar="تقديم مشروع جديد">Submit New Project</h3>
+                        
+                        <form id="submissionForm">
+                            <div class="form-group">
+                                <label for="projectName" class="form-label" data-en="Project Name" data-ar="اسم المشروع">Project Name</label>
+                                <input type="text" id="projectName" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="creatorName" class="form-label" data-en="Your Name" data-ar="اسمك">Your Name</label>
+                                <input type="text" id="creatorName" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="projectLink" class="form-label" data-en="Project Link (GitHub, Demo, etc.)" data-ar="رابط المشروع (GitHub، عرض تجريبي، إلخ)">Project Link (GitHub, Demo, etc.)</label>
+                                <input type="url" id="projectLink" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="projectDescription" class="form-label" data-en="Project Description" data-ar="وصف المشروع">Project Description</label>
+                                <textarea id="projectDescription" class="form-input form-textarea" required></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-paper-plane"></i>
+                                <span data-en="Submit Project" data-ar="تقديم المشروع">Submit Project</span>
+                            </button>
+                        </form>
+                    </div>
+                </section>
 
-                <!-- My Projects Section -->
-                <section class="my-projects-section">
-                    <h3 data-en="My Submitted Projects" data-ar="مشاريعي المقدمة">My Submitted Projects</h3>
-                    <div class="projects-controls">
-                        <div class="projects-stats">
-                            <span class="stat-item" data-en="Total Projects:" data-ar="إجمالي المشاريع:">Total Projects: <strong id="totalProjects">0</strong></span>
-                        </div>
-                    </div>
+                <!-- My Projects Section -->
+                <section class="my-projects-section">
+                    <h3 data-en="My Submitted Projects" data-ar="مشاريعي المقدمة">My Submitted Projects</h3>
+                    <div class="projects-controls">
+                        <div class="projects-stats">
+                            <span class="stat-item" data-en="Total Projects:" data-ar="إجمالي المشاريع:">Total Projects: <strong id="totalProjects">0</strong></span>
+                        </div>
+                    </div>
 
-                    <div class="my-projects-grid" id="myProjectsGrid">
-                        <!-- User's projects will be displayed here -->
-                    </div>
+                    <div class="my-projects-grid" id="myProjectsGrid">
+                        <!-- User's projects will be displayed here -->
+                    </div>
 
-                    <div class="no-projects-message" id="noMyProjectsMessage" style="display: none;">
-                        <div class="no-projects-icon">📁</div>
-                        <h3 data-en="No Projects Yet" data-ar="لا توجد مشاريع بعد">No Projects Yet</h3>
-                        <p data-en="You haven't submitted any projects yet. Use the form above to submit your first project!" data-ar="لم تقم بتقديم أي مشاريع بعد. استخدم النموذج أعلاه لتقديم مشروعك الأول!">You haven't submitted any projects yet. Use the form above to submit your first project!</p>
-                    </div>
-                </section>
-            </div>
-        </div>
-    </main>
+                    <div class="no-projects-message" id="noMyProjectsMessage" style="display: none;">
+                        <div class="no-projects-icon">📁</div>
+                        <h3 data-en="No Projects Yet" data-ar="لا توجد مشاريع بعد">No Projects Yet</h3>
+                        <p data-en="You haven't submitted any projects yet. Use the form above to submit your first project!" data-ar="لم تقم بتقديم أي مشاريع بعد. استخدم النموذج أعلاه لتقديم مشروعك الأول!">You haven't submitted any projects yet. Use the form above to submit your first project!</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
 
-    <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

@@ -549,18 +549,42 @@ class AIProjectGallery {
         `;
     }
 
-    // 🛑 UPDATED: Function to update the Member Portal title
+    // 🛑 UPDATED: Function to update the Member Portal title AND subtitle
     updateMemberPortalTitle() {
         const memberPortalTitleEl = document.getElementById('memberPortalTitle'); // Targets the H2 element
-        if (memberPortalTitleEl) {
-            if (this.currentMember && this.currentMember.name) {
+        const memberPortalSubtitleEl = document.getElementById('memberPortalSubtitle'); // Targets the Subtitle P element
+        
+        if (this.currentMember && this.currentMember.name) {
+            const name = this.currentMember.name;
+            
+            // 1. Update Main Title
+            if (memberPortalTitleEl) {
                 memberPortalTitleEl.textContent = this.currentLanguage === 'en' 
-                    ? `Welcome, ${this.currentMember.name}!` 
-                    : `مرحباً، ${this.currentMember.name}!`;
-            } else {
+                    ? `Welcome, ${name}!` 
+                    : `مرحباً، ${name}!`;
+            }
+            
+            // 2. Update Subtitle
+            if (memberPortalSubtitleEl) {
+                memberPortalSubtitleEl.textContent = this.currentLanguage === 'en' 
+                    ? `Welcome back, ${name}! Manage your projects and submit new ones.` 
+                    : `مرحباً بعودتك، ${name}! إدارة مشاريعك وتقديم مشاريع جديدة.`;
+                memberPortalSubtitleEl.style.display = 'block';
+            }
+
+        } else {
+            // Not logged in or missing name
+            if (memberPortalTitleEl) {
                 memberPortalTitleEl.textContent = this.currentLanguage === 'en' 
                     ? 'Member Portal' 
                     : 'بوابة الأعضاء';
+            }
+            if (memberPortalSubtitleEl) {
+                memberPortalSubtitleEl.textContent = this.currentLanguage === 'en' 
+                    ? 'Please verify your membership to access your personal dashboard.' 
+                    : 'يرجى التحقق من عضويتك للوصول إلى لوحة التحكم الخاصة بك.';
+                // Hide or show the subtitle based on whether it provides meaningful info
+                memberPortalSubtitleEl.style.display = 'none';
             }
         }
     }
