@@ -70,12 +70,12 @@ class AIProjectGallery {
         
         const submissionForm = document.getElementById('submissionForm');
         if (submissionForm) {
-            submissionForm.addEventListener('submit', (e) => {
+            submissionForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 console.log('=== FORM SUBMITTED ===');
                 console.log('Current member:', this.currentMember);
                 
-                if (!this.validateForm()) {
+                if (!(await this.validateForm())) {
                     this.resetSubmitButton(); 
                     return;
                 }
@@ -84,10 +84,10 @@ class AIProjectGallery {
 
                 if (editingProjectId) {
                     console.log('Updating project:', editingProjectId);
-                    this.handleProjectUpdate(editingProjectId);
+                    await this.handleProjectUpdate(editingProjectId);
                 } else {
                     console.log('Submitting new project');
-                    this.handleProjectSubmission(); 
+                    await this.handleProjectSubmission(); 
                 }
             });
         }
@@ -295,20 +295,34 @@ class AIProjectGallery {
         if (form) form.reset();
     }
 
-    getFormData() {
+    async getFormData() {
+        const imageData = await this.getProjectImage();
         return {
             name: document.getElementById('projectName').value.trim(),
             creator: document.getElementById('creatorName').value.trim(),
             link: document.getElementById('projectLink').value.trim(),
             description: document.getElementById('projectDescription').value.trim(),
+            image: imageData,
             submittedAt: new Date().toISOString(),
             memberEmail: this.currentMember ? this.currentMember.email.toLowerCase() : '' 
         };
     }
 
-    handleProjectSubmission() {
+    getProjectImage() {
+        const imageInput = document.getElementById('projectImage');
+        if (imageInput && imageInput.files && imageInput.files[0]) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(imageInput.files[0]);
+            });
+        }
+        return Promise.resolve(null);
+    }
+
+    async handleProjectSubmission() {
         console.log('=== HANDLE PROJECT SUBMISSION ===');
-        const formData = this.getFormData();
+        const formData = await this.getFormData();
         console.log('Form data:', formData);
 
         if (!this.currentMember || !formData.name) { 
@@ -340,8 +354,8 @@ class AIProjectGallery {
         this.addProject(formData);
     }
 
-    handleProjectUpdate(projectId) {
-        const updatedData = this.getFormData();
+    async handleProjectUpdate(projectId) {
+        const updatedData = await this.getFormData();
         
         if (!updatedData.name) {
             this.resetSubmitButton();
@@ -374,8 +388,8 @@ class AIProjectGallery {
         );
     }
 
-    validateForm() {
-        const formData = this.getFormData();
+    async validateForm() {
+        const formData = await this.getFormData();
         const submitBtn = document.querySelector('#submissionForm .btn-primary');
         if (!submitBtn) return false;
         
@@ -488,7 +502,6 @@ class AIProjectGallery {
         const form = document.getElementById('submissionForm');
         if (form) {
             form.reset();
-            
             form.removeAttribute('data-editing-project-id'); 
         }
         
@@ -513,12 +526,9 @@ class AIProjectGallery {
     }
 
     createProjectCard(project) {
-        const submittedDate = new Date(project.submittedAt).toLocaleDateString(
-            this.currentLanguage === 'en' ? 'en-US' : 'ar-SA'
-        );
-        
         return `
             <div class="project-card fade-in">
+                ${project.image ? `<img src="${project.image}" alt="${this.escapeHtml(project.name)}" class="project-image">` : ''}
                 <h3 class="project-title">${this.escapeHtml(project.name)}</h3>
                 <p class="project-creator">
                     <i class="fas fa-user"></i> ${this.escapeHtml(project.creator)}
@@ -529,9 +539,6 @@ class AIProjectGallery {
                         <i class="fas fa-external-link-alt"></i> 
                         ${this.currentLanguage === 'en' ? 'View Project' : 'عرض المشروع'}
                     </a>
-                    <span class="project-date">
-                        <i class="fas fa-calendar"></i> ${submittedDate}
-                    </span>
                 </div>
             </div>
         `;
@@ -583,12 +590,9 @@ class AIProjectGallery {
     }
 
     createMyProjectCard(project) {
-        const submittedDate = new Date(project.submittedAt).toLocaleDateString(
-            this.currentLanguage === 'en' ? 'en-US' : 'ar-SA'
-        );
-        
         return `
             <div class="my-project-card fade-in" data-project-id="${project.id}">
+                ${project.image ? `<img src="${project.image}" alt="${this.escapeHtml(project.name)}" class="project-image">` : ''}
                 <div class="project-header">
                     <h3 class="project-title">${this.escapeHtml(project.name)}</h3>
                     <div class="project-actions">
@@ -605,9 +609,6 @@ class AIProjectGallery {
                     <p class="project-description">${this.escapeHtml(project.description)}</p>
                 </div>
                 <div class="project-meta">
-                    <div class="project-date">
-                        <i class="fas fa-calendar"></i> ${submittedDate}
-                    </div>
                     <a href="${project.link}" target="_blank" class="project-link">
                         <i class="fas fa-external-link-alt"></i> 
                         ${this.currentLanguage === 'en' ? 'View Project' : 'عرض المشروع'}
