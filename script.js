@@ -228,13 +228,18 @@ class AIProjectGallery {
     }
 
     addProject(projectData) {
+        console.log('addProject called with:', projectData);
+        
         this.projects.unshift(projectData);
         localStorage.setItem('aiAssociationProjects', JSON.stringify(this.projects));
+        
+        console.log('Projects after adding:', this.projects);
         
         this.renderProjects();
         this.renderMyProjects();
         this.resetForm();
         
+        console.log('Showing success notification');
         this.showNotification(
             this.currentLanguage === 'en' 
                 ? 'Project submitted successfully!' 
@@ -304,14 +309,26 @@ class AIProjectGallery {
     }
 
     resetForm() {
-        document.getElementById('submissionForm').reset();
-        delete document.getElementById('submissionForm').dataset.editingProjectId;
+        console.log('Resetting form');
+        const form = document.getElementById('submissionForm');
+        if (form) {
+            form.reset();
+            delete form.dataset.editingProjectId;
+            console.log('Form reset successfully');
+        } else {
+            console.error('Form not found for reset');
+        }
         
         const submitBtn = document.querySelector('.btn-primary');
-        submitBtn.innerHTML = `
-            <i class="fas fa-paper-plane"></i>
-            <span>${this.currentLanguage === 'en' ? 'Submit Project' : 'تقديم المشروع'}</span>
-        `;
+        if (submitBtn) {
+            submitBtn.innerHTML = `
+                <i class="fas fa-paper-plane"></i>
+                <span>${this.currentLanguage === 'en' ? 'Submit Project' : 'تقديم المشروع'}</span>
+            `;
+            console.log('Submit button text reset');
+        } else {
+            console.error('Submit button not found for reset');
+        }
     }
 
     // Rendering
