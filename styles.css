@@ -3,19 +3,19 @@
 
 /* CSS Variables for Professional Theme */
 :root {
-    /* Professional Color Palette - Corporate Colors */
-    --primary-gradient-start: #1f2937;
-    --primary-gradient-middle: #374151;
-    --primary-gradient-end: #4b5563;
-    --secondary-color: #6b7280;
-    --accent-color: #9ca3af;
+    /* AI Association Logo Color Palette */
+    --primary-gradient-start: #00407A;
+    --primary-gradient-middle: #005A9C;
+    --primary-gradient-end: #0078C8;
+    --secondary-color: #555555;
+    --accent-color: #0078C8;
     --success: #059669;
     --warning: #d97706;
     --error: #dc2626;
     
-    /* Text Colors */
-    --text-primary: #1f2937;
-    --text-secondary: #374151;
+    /* Text Colors - Matching Logo */
+    --text-primary: #555555;
+    --text-secondary: #00407A;
     --text-light: #6b7280;
     --text-white: #ffffff;
     
@@ -50,9 +50,9 @@
     --text-primary: #f9fafb;
     --text-secondary: #e5e7eb;
     --text-light: #9ca3af;
-    --background: #111827;
-    --surface: #1f2937;
-    --surface-elevated: #374151;
+    --background: #0f1419;
+    --surface: #1a2332;
+    --surface-elevated: #2a3441;
     --border: #374151;
     --border-light: #4b5563;
 }
@@ -258,6 +258,7 @@ p {
 }
 
 .add-project-link:hover {
+    background: linear-gradient(135deg, #003366, #0056B3);
     transform: translateY(-2px);
     box-shadow: var(--shadow-xl);
 }
@@ -426,6 +427,7 @@ p {
 .btn-primary:hover {
     transform: translateY(-1px);
     box-shadow: var(--shadow-lg);
+    background: linear-gradient(135deg, #003366, #0056B3);
 }
 
 .btn-secondary {
