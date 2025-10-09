@@ -94,6 +94,7 @@
                         </button>
                     </form>
                 </div>
+                
             </div>
         </div>
 
@@ -102,8 +103,12 @@
             <div class="member-portal">
                 <div class="portal-header">
                     <h2 id="memberPortalTitle" data-en="Member Portal" data-ar="بوابة الأعضاء">Member Portal</h2>
-                    <!-- CRITICAL UPDATE: Added id="memberPortalSubtitle" -->
-                    <p id="memberPortalSubtitle" class="portal-subtitle" data-en="Welcome back! Manage your projects and submit new ones." data-ar="مرحباً بعودتك! أدر مشاريعك وقدم مشاريع جديدة.">Welcome back! Manage your projects and submit new ones.</p>
+                    <p class="portal-subtitle">
+                        <!-- Split the message to inject the user's name dynamically via JS -->
+                        <span id="welcomeText" data-en="Welcome back" data-ar="مرحباً بعودتك">Welcome back</span>,
+                        <strong id="userNameDisplay">Member</strong>!
+                        <span id="portalInstructions" data-en="Manage your projects and submit new ones." data-ar="أدر مشاريعك وقدم مشاريع جديدة.">Manage your projects and submit new ones.</span>
+                    </p>
                 </div>
 
                 <!-- Project Submission Form -->
