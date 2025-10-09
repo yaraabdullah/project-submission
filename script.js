@@ -145,30 +145,39 @@ class AIProjectGallery {
     }
 
     // --- Membership Verification ---
+// Locate this method in your script.js and replace it entirely
 
     handleMembershipVerification(e) {
-        e.preventDefault();
         
-        const email = document.getElementById('memberEmail').value.trim();
+        e.preventDefault();
+
+        let email = document.getElementById('memberEmail').value.trim();
         const phone = document.getElementById('memberPhone').value.trim();
+    
+    // 🛑 CRITICAL FIX: Ensure email is always set.
+    // This uses a unique timestamp if the user left the email field empty.
+        if (!email) {
+            email = `guest_${Date.now()}@ai-association.com`;
+        }
         
         const placeholderMember = {
-            email: email || 'placeholder@ai-association.com',
+            email: email, 
             phone: phone || '+1234567890',
-            name: email ? email.split('@')[0] : 'Member'
+            name: email.split('@')[0]
         };
-        
+
         this.currentMember = placeholderMember;
         localStorage.setItem('aiAssociationMember', JSON.stringify(placeholderMember));
         
         this.showNotification(
             this.currentLanguage === 'en' 
-                ? 'Welcome to the member portal!' 
-                : 'مرحباً بك في بوابة الأعضاء!'
+            ? 'Welcome to the member portal!' 
+            : 'مرحباً بك في بوابة الأعضاء!'
         );
         
         this.renderMyProjects(); 
         this.navigateToPage('member-portal');
+    
     }
 
     clearMembershipForm() {
