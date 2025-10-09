@@ -59,8 +59,19 @@ class AIProjectGallery {
     // Navigation
     handleNavigation(e) {
         e.preventDefault();
-        const page = e.target.getAttribute('data-page');
-        this.navigateToPage(page);
+        console.log('Navigation clicked, target:', e.target);
+        console.log('Target closest:', e.target.closest('[data-page]'));
+        
+        const link = e.target.closest('[data-page]');
+        const page = link ? link.getAttribute('data-page') : null;
+        
+        console.log('Page to navigate to:', page);
+        
+        if (page) {
+            this.navigateToPage(page);
+        } else {
+            console.error('No page found for navigation');
+        }
     }
 
     navigateToPage(page) {
