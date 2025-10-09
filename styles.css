@@ -3,12 +3,12 @@
 
 /* CSS Variables for Professional Theme */
 :root {
-    /* Professional Color Palette */
+    /* Professional Color Palette - Reduced Light Blue */
     --primary-gradient-start: #1e3a8a;
-    --primary-gradient-middle: #3b82f6;
-    --primary-gradient-end: #06b6d4;
-    --secondary-color: #6366f1;
-    --accent-color: #8b5cf6;
+    --primary-gradient-middle: #2563eb;
+    --primary-gradient-end: #1e40af;
+    --secondary-color: #374151;
+    --accent-color: #4b5563;
     --success: #10b981;
     --warning: #f59e0b;
     --error: #ef4444;
@@ -78,7 +78,7 @@ body {
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
-    font-weight: 600;
+    font-weight: 400;
     line-height: 1.2;
     color: var(--text-primary);
 }
@@ -146,7 +146,7 @@ p {
 .logo-text h1 {
     color: var(--text-white);
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 400;
     margin: 0;
 }
 
@@ -219,7 +219,7 @@ p {
 
 .hero-title {
     font-size: 3rem;
-    font-weight: 700;
+    font-weight: 400;
     background: linear-gradient(135deg, var(--primary-gradient-start), var(--primary-gradient-end));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -251,7 +251,7 @@ p {
     text-decoration: none;
     padding: 1rem 2rem;
     border-radius: var(--border-radius-lg);
-    font-weight: 600;
+    font-weight: 400;
     font-size: 1.125rem;
     transition: var(--transition);
     box-shadow: var(--shadow-lg);
@@ -286,7 +286,7 @@ p {
 
 .project-title {
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: 400;
     margin-bottom: 0.5rem;
     color: var(--text-primary);
 }
@@ -336,7 +336,7 @@ p {
     text-align: center;
     margin-bottom: 2rem;
     font-size: 2rem;
-    font-weight: 700;
+    font-weight: 400;
 }
 
 .membership-subtitle {
@@ -358,7 +358,7 @@ p {
 
 .portal-title {
     font-size: 2.5rem;
-    font-weight: 700;
+    font-weight: 400;
     margin-bottom: 1rem;
 }
 
@@ -410,7 +410,7 @@ p {
     padding: 0.75rem 1.5rem;
     border: none;
     border-radius: var(--border-radius);
-    font-weight: 600;
+    font-weight: 400;
     font-size: 1rem;
     cursor: pointer;
     transition: var(--transition);
