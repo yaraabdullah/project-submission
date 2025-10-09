@@ -38,7 +38,13 @@ class AIProjectGallery {
         document.getElementById('membershipForm').addEventListener('submit', (e) => this.handleMembershipVerification(e));
         
         // Project submission form
-        document.getElementById('submissionForm').addEventListener('submit', (e) => this.handleProjectSubmission(e));
+        const submissionForm = document.getElementById('submissionForm');
+        console.log('Submission form element:', submissionForm);
+        if (submissionForm) {
+            submissionForm.addEventListener('submit', (e) => this.handleProjectSubmission(e));
+        } else {
+            console.error('Submission form not found!');
+        }
         
         // Event delegation for project actions
         document.addEventListener('click', (e) => {
@@ -178,6 +184,19 @@ class AIProjectGallery {
     handleProjectSubmission(e) {
         e.preventDefault();
         
+        console.log('Project submission form submitted');
+        console.log('Current member:', this.currentMember);
+        
+        if (!this.currentMember) {
+            console.error('No current member found');
+            this.showNotification(
+                this.currentLanguage === 'en' 
+                    ? 'Please verify your membership first!' 
+                    : 'يرجى التحقق من العضوية أولاً!'
+            );
+            return;
+        }
+        
         const formData = {
             name: document.getElementById('projectName').value.trim(),
             creator: document.getElementById('creatorName').value.trim(),
@@ -186,6 +205,19 @@ class AIProjectGallery {
             submittedAt: new Date().toISOString(),
             memberEmail: this.currentMember.email
         };
+        
+        console.log('Form data:', formData);
+        
+        // Check if all required fields are filled
+        if (!formData.name || !formData.creator || !formData.link || !formData.description) {
+            console.error('Missing required fields');
+            this.showNotification(
+                this.currentLanguage === 'en' 
+                    ? 'Please fill in all required fields!' 
+                    : 'يرجى ملء جميع الحقول المطلوبة!'
+            );
+            return;
+        }
         
         // Generate unique ID
         formData.id = Date.now().toString();
