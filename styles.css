@@ -3,15 +3,15 @@
 
 /* CSS Variables for Professional Theme */
 :root {
-    /* Professional Color Palette - Reduced Light Blue */
-    --primary-gradient-start: #1e3a8a;
-    --primary-gradient-middle: #2563eb;
-    --primary-gradient-end: #1e40af;
-    --secondary-color: #374151;
-    --accent-color: #4b5563;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --error: #ef4444;
+    /* Professional Color Palette - Corporate Colors */
+    --primary-gradient-start: #1f2937;
+    --primary-gradient-middle: #374151;
+    --primary-gradient-end: #4b5563;
+    --secondary-color: #6b7280;
+    --accent-color: #9ca3af;
+    --success: #059669;
+    --warning: #d97706;
+    --error: #dc2626;
     
     /* Text Colors */
     --text-primary: #1f2937;
