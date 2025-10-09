@@ -1,9 +1,9 @@
-// Professional AI Association Project Gallery
+// Professional AI Association Project Gallery - FIXED CODE
 class AIProjectGallery {
     constructor() {
         console.log('Initializing AI Project Gallery...');
 
-        // Initialize data
+        // Initialize data from Local Storage
         this.projects = JSON.parse(localStorage.getItem('aiAssociationProjects')) || [];
         this.currentLanguage = localStorage.getItem('aiAssociationLanguage') || 'en';
         this.currentTheme = localStorage.getItem('aiAssociationTheme') || 'light';
@@ -40,13 +40,19 @@ class AIProjectGallery {
         if (submissionForm) {
             submissionForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                // Use getAttribute for reliable state check
+                // FIX: Check validation before determining submission/update
+                if (!this.validateForm()) {
+                    // Validation failed, the button state is handled in validateForm
+                    this.resetSubmitButton(); 
+                    return;
+                }
+                
                 const editingProjectId = submissionForm.getAttribute('data-editing-project-id'); 
 
                 if (editingProjectId) {
                     this.handleProjectUpdate(editingProjectId);
                 } else {
-                    this.handleProjectSubmission(e); 
+                    this.handleProjectSubmission(); 
                 }
             });
         }
@@ -98,14 +104,17 @@ class AIProjectGallery {
         
         // Show target page
         if (page === 'gallery') {
-            document.getElementById('galleryPage').style.display = 'block';
+            const galleryPage = document.getElementById('galleryPage');
+            if (galleryPage) galleryPage.style.display = 'block';
             this.renderProjects();
         } else if (page === 'membership') {
-            document.getElementById('membershipPage').style.display = 'block';
+            const membershipPage = document.getElementById('membershipPage');
+            if (membershipPage) membershipPage.style.display = 'block';
             this.clearMembershipForm();
         } else if (page === 'member-portal') {
-            if (this.currentMember) {
-                document.getElementById('memberPortalPage').style.display = 'block';
+            const portalPage = document.getElementById('memberPortalPage');
+            if (this.currentMember && portalPage) {
+                portalPage.style.display = 'block';
                 this.renderMyProjects();
             } else {
                 this.navigateToPage('membership');
@@ -113,7 +122,7 @@ class AIProjectGallery {
         }
     }
     
-    // --- Theme & Language Management ---
+    // --- Theme & Language Management (No changes needed) ---
 
     toggleTheme() {
         this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
@@ -124,7 +133,7 @@ class AIProjectGallery {
     applyTheme() {
         document.documentElement.setAttribute('data-theme', this.currentTheme);
         const themeIcon = document.querySelector('#themeToggle i');
-        themeIcon.className = this.currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        if (themeIcon) themeIcon.className = this.currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
     }
 
     toggleLanguage() {
@@ -140,22 +149,22 @@ class AIProjectGallery {
         document.querySelectorAll('[data-en]').forEach(element => {
             const enText = element.getAttribute('data-en');
             const arText = element.getAttribute('data-ar');
-            element.textContent = this.currentLanguage === 'en' ? enText : arText;
+            // FIX: Use innerText/textContent for button spans, but still need to check if element exists
+            if (enText && arText) {
+                element.textContent = this.currentLanguage === 'en' ? enText : arText;
+            }
         });
     }
 
     // --- Membership Verification ---
-// Locate this method in your script.js and replace it entirely
 
     handleMembershipVerification(e) {
-        
         e.preventDefault();
 
         let email = document.getElementById('memberEmail').value.trim();
         const phone = document.getElementById('memberPhone').value.trim();
     
-    // 🛑 CRITICAL FIX: Ensure email is always set.
-    // This uses a unique timestamp if the user left the email field empty.
+        // 🛑 CRITICAL FIX (Already implemented, kept for certainty): Ensure email is always set.
         if (!email) {
             email = `guest_${Date.now()}@ai-association.com`;
         }
@@ -177,11 +186,11 @@ class AIProjectGallery {
         
         this.renderMyProjects(); 
         this.navigateToPage('member-portal');
-    
     }
 
     clearMembershipForm() {
-        document.getElementById('membershipForm').reset();
+        const form = document.getElementById('membershipForm');
+        if (form) form.reset();
     }
 
     // --- Project Submission and Update ---
@@ -193,14 +202,15 @@ class AIProjectGallery {
             link: document.getElementById('projectLink').value.trim(),
             description: document.getElementById('projectDescription').value.trim(),
             submittedAt: new Date().toISOString(),
-            memberEmail: this.currentMember.email
+            memberEmail: this.currentMember ? this.currentMember.email : '' // Ensure it's never undefined
         };
     }
 
-    handleProjectSubmission(e) {
+    handleProjectSubmission() {
         const formData = this.getFormData();
 
-        if (!this.currentMember || !this.validateForm(formData)) {
+        // Already validated in setupEventListeners, but good to check again
+        if (!this.currentMember || !formData.name) { 
             this.resetSubmitButton();
             return;
         }
@@ -229,7 +239,8 @@ class AIProjectGallery {
     handleProjectUpdate(projectId) {
         const updatedData = this.getFormData();
         
-        if (!this.validateForm(updatedData)) {
+        // Already validated in setupEventListeners
+        if (!updatedData.name) {
             this.resetSubmitButton();
             return;
         }
@@ -259,21 +270,28 @@ class AIProjectGallery {
         );
     }
 
-    validateForm(formData) {
+    validateForm() {
+        const formData = this.getFormData();
         const submitBtn = document.querySelector('#submissionForm .btn-primary');
-        submitBtn.disabled = true;
-
+        if (!submitBtn) return false;
+        
+        // 1. Check for logged-in member
         if (!this.currentMember) {
             this.showNotification(this.currentLanguage === 'en' ? 'Please verify your membership first!' : 'يرجى التحقق من العضوية أولاً!');
+            this.resetSubmitButton(); // Ensure it's not disabled forever
             return false;
         }
 
+        // 2. Check for required fields
         if (!formData.name || !formData.creator || !formData.link || !formData.description) {
             this.showNotification(this.currentLanguage === 'en' ? 'Please fill in all required fields!' : 'يرجى ملء جميع الحقول المطلوبة!');
+            this.resetSubmitButton(); // Ensure it's not disabled forever
             return false;
         }
 
-        // Update button text to show activity
+        // 3. Validation success: Set button to 'Processing' state
+        submitBtn.disabled = true; // Disable to prevent double submission
+        
         submitBtn.innerHTML = `
             <div class="spinner"></div>
             <span>${this.currentLanguage === 'en' ? 'Processing...' : 'جاري المعالجة...'}</span>
@@ -287,7 +305,7 @@ class AIProjectGallery {
         
         this.renderProjects();
         this.renderMyProjects();
-        this.resetForm(); // Call resetForm after successful operations
+        this.resetForm(); // Clears form, removes attribute, and resets button text
         
         this.showNotification(
             this.currentLanguage === 'en' 
@@ -326,17 +344,14 @@ class AIProjectGallery {
         document.getElementById('projectDescription').value = project.description;
         
         // Use setAttribute for reliable state setting
-        document.getElementById('submissionForm').setAttribute('data-editing-project-id', projectId);
+        const submissionForm = document.getElementById('submissionForm');
+        if (submissionForm) submissionForm.setAttribute('data-editing-project-id', projectId);
         
         // Change submit button text
-        const submitBtn = document.querySelector('#submissionForm .btn-primary');
-        submitBtn.innerHTML = `
-            <i class="fas fa-save"></i>
-            <span>${this.currentLanguage === 'en' ? 'Update Project' : 'تحديث المشروع'}</span>
-        `;
+        this.resetSubmitButton(); // Call reset to ensure button is in 'Update' mode and enabled
         
         // Scroll to form
-        document.getElementById('submissionForm').scrollIntoView({ behavior: 'smooth' });
+        if (submissionForm) submissionForm.scrollIntoView({ behavior: 'smooth' });
     }
 
     resetSubmitButton() {
@@ -345,14 +360,14 @@ class AIProjectGallery {
             submitBtn.disabled = false;
             const form = document.getElementById('submissionForm');
             
-            // Check for the attribute to determine the button text
+            // Check for the attribute to determine the correct button text (Submit or Update)
             const isEditing = form && form.getAttribute('data-editing-project-id');
             
             if (isEditing) {
                  submitBtn.innerHTML = `
-                    <i class="fas fa-save"></i>
-                    <span>${this.currentLanguage === 'en' ? 'Update Project' : 'تحديث المشروع'}</span>
-                `;
+                     <i class="fas fa-save"></i>
+                     <span>${this.currentLanguage === 'en' ? 'Update Project' : 'تحديث المشروع'}</span>
+                 `;
             } else {
                 submitBtn.innerHTML = `
                     <i class="fas fa-paper-plane"></i>
@@ -371,10 +386,11 @@ class AIProjectGallery {
             form.removeAttribute('data-editing-project-id'); 
         }
         
-        this.resetSubmitButton(); 
+        this.resetSubmitButton(); // Resets button back to 'Submit Project' and re-enables it
     }
 
     // --- Rendering ---
+    // (No changes needed here, the grid style is correctly set to 'grid' when projects exist)
 
     renderProjects() {
         const projectsGrid = document.getElementById('projectsGrid');
@@ -442,6 +458,7 @@ class AIProjectGallery {
             myProjectsGrid.style.display = 'none';
             noProjectsMessage.style.display = 'block';
         } else {
+            // CRITICAL CHECK: This is what ensures your projects are visible
             myProjectsGrid.style.display = 'grid'; 
             noProjectsMessage.style.display = 'none';
             
@@ -486,6 +503,8 @@ class AIProjectGallery {
     }
 
     // --- Utility Functions ---
+    // (Notification and initial page logic remain the same)
+    
     escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
